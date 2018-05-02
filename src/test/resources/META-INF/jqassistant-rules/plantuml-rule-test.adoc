@@ -1,4 +1,12 @@
-== PlantUML
+= PlantUML
+
+== Idea
+
+- Stereotypes are used as labels, e.g. `\<<Type>>`
+- The stereotypes may contain a modifier `+` indicating a label that shall be added
+- The description of a stereotype may contain attribute:value pairs for matching
+
+== Rules
 
 [[plantuml-rule:ComponentDiagramAdoc]]
 [plantuml,role=concept]
@@ -20,6 +28,33 @@ b -> a : +Defines Dependency
 c -> a : +Defines Dependency
 
 @enduml
+----
+
+The example before will be translated in a cypher query like this:
+
+[source,cypher]
+----
+MATCH
+  (n1{name:"root"}),
+  (n2{name:"a"}),
+  (n3{name:"b"}),
+  (n4{name:"c"}),
+  (n1)-[:CONTAINS]->(n2),
+  (n1)-[:CONTAINS]->(n3),
+  (n1)-[:CONTAINS]->(n4)
+SET
+  n1:Root
+SET
+  n2:Module
+SET
+  n3:Module
+SET
+  n4:Module
+MERGE
+  (n3)-[r1:DEFINES_DEPENDENCY]->(n2),
+  (n4)-[r2:DEFINES_DEPENDENCY]->(n2)
+RETURN
+  n1, n2, n3, n4, r1, r2
 ----
 
 [[plantuml-rule:ClassDiagramAdoc]]

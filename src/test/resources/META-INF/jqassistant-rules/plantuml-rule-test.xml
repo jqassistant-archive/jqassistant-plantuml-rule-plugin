@@ -3,22 +3,22 @@
     <concept id="plantuml-rule:ComponentDiagramXml">
         <description>PlantUML diagram as XML rule.</description>
         <source language="plantuml"><![CDATA[
-        @startuml
-        skinparam componentStyle uml2
+@startuml
+skinparam componentStyle uml2
 
-        [Root {name:"root"}] as root <<Package +Root>>
-        [A {name:"a"}] as a <<Package +Module>>
-        [B {name:"b"}] as b <<Package +Module>>
-        [C {name:"c"}] as c <<Package +Module>>
+[Root {name:"root"}] as root <<Package>> <<+Root>>
+[A {name:"a"}] as a <<Package +Module>>
+[B {name:"b"}] as b <<Package +Module>>
+[C {name:"c"}] as c <<Package +Module>>
 
-        root -up-> a : Contains
-        root -up-> b : Contains
-        root -up-> c : Contains
+root -up-> a : Contains
+root -up-> b : Contains
+root -up-> c : Contains
 
-        b -> a : +Defines Dependency
-        c -> a : +Defines Dependency
+b -> a : +Defines Dependency
+c -> a : +Defines Dependency
 
-        @enduml
+@enduml
         ]]></source>
     </concept>
 </jqa:jqassistant-rules>
