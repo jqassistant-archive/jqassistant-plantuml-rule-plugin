@@ -16,9 +16,9 @@
 skinparam componentStyle uml2
 
 [Root {name:"root"}] as root <<Package>> <<+Root>>
-[A {name:"a"}] as a <<Package +Module>>
-[B {name:"b"}] as b <<Package +Module>>
-[C {name:"c"}] as c <<Package +Module>>
+[A {name:"a"}] as a <<Package>> <<+Module>>
+[B {name:"b"}] as b <<Package>> <<+Module>>
+[C {name:"c"}] as c <<Package>> <<+Module>>
 
 root -up-> a : Contains
 root -up-> b : Contains
@@ -30,7 +30,7 @@ c -> a : +Defines Dependency
 @enduml
 ----
 
-The example before will be translated in a cypher query like this:
+The example above will be translated into a cypher query like this:
 
 [source,cypher]
 ----
