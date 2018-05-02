@@ -10,8 +10,14 @@ import org.junit.Test;
 public class PlantUMLRulePluginIT extends AbstractJavaPluginIT {
 
     @Test
-    public void asciidoc() throws IOException, RuleException {
+    public void asciidocComponentDiagram() throws IOException, RuleException {
         scanClassPathDirectory(getClassesDirectory(PlantUMLRulePluginIT.class));
-        applyConcept("plantuml-rule:ComponentDiagramAdoc");
+        applyConcept("plantuml-rule:ClassDiagramAdoc");
+    }
+
+    @Test
+    public void asciidocClassDiagram() throws IOException, RuleException {
+        scanClassPathDirectory(getClassesDirectory(PlantUMLRulePluginIT.class));
+        applyConcept("plantuml-rule:ClassDiagramAdoc");
     }
 }

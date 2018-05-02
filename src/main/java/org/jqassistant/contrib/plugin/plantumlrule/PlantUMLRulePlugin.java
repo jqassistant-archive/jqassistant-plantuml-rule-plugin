@@ -19,12 +19,10 @@ import com.buschmais.jqassistant.core.analysis.api.rule.Severity;
 
 import net.sourceforge.plantuml.BlockUml;
 import net.sourceforge.plantuml.SourceStringReader;
+import net.sourceforge.plantuml.classdiagram.AbstractEntityDiagram;
 import net.sourceforge.plantuml.core.Diagram;
-import net.sourceforge.plantuml.cucadiagram.Code;
 import net.sourceforge.plantuml.cucadiagram.ILeaf;
 import net.sourceforge.plantuml.cucadiagram.Link;
-import net.sourceforge.plantuml.cucadiagram.entity.EntityFactory;
-import net.sourceforge.plantuml.descdiagram.DescriptionDiagram;
 import net.sourceforge.plantuml.png.MetadataTag;
 import org.asciidoctor.ast.AbstractBlock;
 
@@ -49,10 +47,15 @@ public class PlantUMLRulePlugin implements RuleLanguagePlugin {
         SourceStringReader reader = new SourceStringReader(diagramSource);
         List<BlockUml> blocks = reader.getBlocks();
         Diagram diagram = blocks.get(0).getDiagram();
-        DescriptionDiagram descriptionDiagram = (DescriptionDiagram) diagram;
-        EntityFactory entityFactory = descriptionDiagram.getEntityFactory();
-        Collection<ILeaf> leaves = entityFactory.getLeafsvalues();
-        List<Link> links = entityFactory.getLinks();
+        if (diagram instanceof AbstractEntityDiagram) {
+            return evaluateDescriptionDiagram((AbstractEntityDiagram) diagram);
+        }
+        throw new RuleException("Rule type " + diagram.getClass().getName() + " is not supported.");
+    }
+
+    private <T extends ExecutableRule<?>> Result<T> evaluateDescriptionDiagram(AbstractEntityDiagram descriptionDiagram) {
+        Collection<ILeaf> leaves = descriptionDiagram.getLeafsvalues();
+        List<Link> links = descriptionDiagram.getLinks();
         return null;
     }
 
