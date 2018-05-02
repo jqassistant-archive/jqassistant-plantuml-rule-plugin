@@ -35,10 +35,10 @@ The example above will be translated into a cypher query like this:
 [source,cypher]
 ----
 MATCH
-  (n1{name:"root"}),
-  (n2{name:"a"}),
-  (n3{name:"b"}),
-  (n4{name:"c"}),
+  (n1:Package{name:"root"}),
+  (n2:Package{name:"a"}),
+  (n3:Package{name:"b"}),
+  (n4:Package{name:"c"}),
   (n1)-[:CONTAINS]->(n2),
   (n1)-[:CONTAINS]->(n3),
   (n1)-[:CONTAINS]->(n4)
