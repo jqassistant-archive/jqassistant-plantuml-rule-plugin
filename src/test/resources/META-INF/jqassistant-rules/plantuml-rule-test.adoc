@@ -7,7 +7,7 @@
 @startuml
 skinparam componentStyle uml2
 
-[Root {name:"root"}] as root <<Package +Root>>
+[Root {name:"root"}] as root <<Package>> <<+Root>>
 [A {name:"a"}] as a <<Package +Module>>
 [B {name:"b"}] as b <<Package +Module>>
 [C {name:"c"}] as c <<Package +Module>>
@@ -18,6 +18,7 @@ root -up-> c : Contains
 
 b -> a : +Defines Dependency
 c -> a : +Defines Dependency
+
 @enduml
 ----
 
@@ -26,13 +27,13 @@ c -> a : +Defines Dependency
 .A class diagram
 ----
 @startuml
+
 skinparam componentStyle uml2
 
-Class01 <|-- Class02
-Class03 *-- Class04
-Class05 o-- Class06
-Class07 .. Class08
-Class09 -- Class10
+class "AbstractEntity \n {name:"AbstractEntity"}" as abstractEntity <<Type>>
+class "Entity" as entity <<Class>> <<+Entity>>
+
+abstractEntity <|-- entity : Extends*
 
 @enduml
 ----
