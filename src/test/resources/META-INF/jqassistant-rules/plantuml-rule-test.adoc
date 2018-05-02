@@ -1,0 +1,22 @@
+== PlantUML
+
+[[plantuml-rule:ComponentDiagramAdoc]]
+[plantuml,role=concept]
+.The root package contains the components `A`, `B` and `C` with defined dependencies.
+----
+@startuml
+skinparam componentStyle uml2
+
+[Root {name:"root"}] as root <<Package +Root>>
+[A {name:"a"}] as a <<Package +Module>>
+[B {name:"b"}] as b <<Package +Module>>
+[C {name:"c"}] as c <<Package +Module>>
+
+root -up-> a : Contains
+root -up-> b : Contains
+root -up-> c : Contains
+
+b -> a : +Defines Dependency
+c -> a : +Defines Dependency
+@enduml
+----

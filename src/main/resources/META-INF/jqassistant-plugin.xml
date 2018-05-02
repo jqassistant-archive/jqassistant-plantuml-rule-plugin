@@ -1,0 +1,7 @@
+<jqa-plugin:jqassistant-plugin xmlns:jqa-plugin="http://www.buschmais.com/jqassistant/core/plugin/schema/v1.4"
+                               name="PlantUML Rule">
+    <description>Provides a rule plugin for executing PlantUML diagrams.</description>
+    <language>
+        <class>org.jqassistant.contrib.plugin.plantumlrule.PlantUMLRulePlugin</class>
+    </language>
+</jqa-plugin:jqassistant-plugin>
