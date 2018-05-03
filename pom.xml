@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.jqassistant.contrib.common</groupId>
@@ -25,7 +26,8 @@
 
     <scm>
         <connection>scm:git:git@github.com:jqassistant-contrib/jqassistant-plantuml-rule-plugin.git</connection>
-        <developerConnection>scm:git:git@github.com:jqassistant-contrib/jqassistant-plantuml-rule-plugin.git</developerConnection>
+        <developerConnection>scm:git:git@github.com:jqassistant-contrib/jqassistant-plantuml-rule-plugin.git
+        </developerConnection>
         <url>https://github.com/jqassistant-contrib/jqassistant-plantuml-rule-plugin</url>
         <tag>HEAD</tag>
     </scm>
@@ -34,6 +36,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <com.buschmais.jqassistant.version>1.4.0-SNAPSHOT</com.buschmais.jqassistant.version>
         <com.buschmais.jqassistant.plugin.version>1.4-SNAPSHOT</com.buschmais.jqassistant.plugin.version>
+        <com.buschmais.xo.version>0.9.0</com.buschmais.xo.version>
         <org.slf4j.version>1.7.12</org.slf4j.version>
     </properties>
 
@@ -54,6 +57,12 @@
         <dependencies>
             <!-- jQAssistant -->
             <dependency>
+                <groupId>com.buschmais.xo</groupId>
+                <artifactId>xo.api</artifactId>
+                <version>${com.buschmais.xo.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
                 <groupId>com.buschmais.jqassistant</groupId>
                 <artifactId>jqa-distribution-specification</artifactId>
                 <version>${com.buschmais.jqassistant.version}</version>
@@ -65,7 +74,8 @@
                 <artifactId>lombok</artifactId>
                 <version>1.16.20</version>
                 <scope>provided</scope>
-            </dependency>            <dependency>
+            </dependency>
+            <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>${org.slf4j.version}</version>
@@ -123,6 +133,10 @@
             <groupId>com.buschmais.jqassistant.core</groupId>
             <artifactId>report</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.buschmais.xo</groupId>
+            <artifactId>xo.api</artifactId>
         </dependency>
         <dependency>
             <groupId>com.buschmais.jqassistant.plugin</groupId>

@@ -65,10 +65,10 @@ RETURN
 
 skinparam componentStyle uml2
 
-class "AbstractEntity \n {name:"AbstractEntity"}" as abstractEntity <<Type>>
+class "AbstractEntity{name:"AbstractEntity"}" as abstractEntity <<Type>>
 class "Entity" as entity <<Class>> <<+Entity>>
 
-abstractEntity <|-- entity : Extends*
+entity --|> abstractEntity  : Extends*
 
 @enduml
 ----

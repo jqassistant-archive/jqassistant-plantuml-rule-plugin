@@ -1,7 +1,21 @@
 package org.jqassistant.contrib.plugin.plantumlrule;
 
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
+import com.buschmais.jqassistant.core.analysis.api.AnalyzerContext;
+import com.buschmais.jqassistant.core.analysis.api.Result;
+import com.buschmais.jqassistant.core.analysis.api.rule.ExecutableRule;
+import com.buschmais.jqassistant.core.analysis.api.rule.RuleException;
+import com.buschmais.jqassistant.core.analysis.api.rule.Severity;
+import com.buschmais.jqassistant.core.analysis.impl.AbstractCypherLanguagePlugin;
+import com.buschmais.jqassistant.core.shared.asciidoc.AsciidoctorFactory;
+import net.sourceforge.plantuml.BlockUml;
+import net.sourceforge.plantuml.SourceStringReader;
+import net.sourceforge.plantuml.core.Diagram;
+import net.sourceforge.plantuml.cucadiagram.CucaDiagram;
+import net.sourceforge.plantuml.cucadiagram.Display;
+import net.sourceforge.plantuml.cucadiagram.ILeaf;
+import net.sourceforge.plantuml.cucadiagram.Link;
+import net.sourceforge.plantuml.png.MetadataTag;
+import org.asciidoctor.ast.AbstractBlock;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,29 +23,9 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.buschmais.jqassistant.core.analysis.api.AnalyzerContext;
-import com.buschmais.jqassistant.core.analysis.api.Result;
-import com.buschmais.jqassistant.core.analysis.api.RuleLanguagePlugin;
-import com.buschmais.jqassistant.core.analysis.api.rule.ExecutableRule;
-import com.buschmais.jqassistant.core.analysis.api.rule.RuleException;
-import com.buschmais.jqassistant.core.analysis.api.rule.Severity;
-import com.buschmais.jqassistant.core.shared.asciidoc.AsciidoctorFactory;
+import static java.util.Collections.singletonList;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Singular;
-import lombok.ToString;
-import net.sourceforge.plantuml.BlockUml;
-import net.sourceforge.plantuml.SourceStringReader;
-import net.sourceforge.plantuml.core.Diagram;
-import net.sourceforge.plantuml.cucadiagram.CucaDiagram;
-import net.sourceforge.plantuml.cucadiagram.ILeaf;
-import net.sourceforge.plantuml.cucadiagram.Link;
-import net.sourceforge.plantuml.cucadiagram.Stereotype;
-import net.sourceforge.plantuml.png.MetadataTag;
-import org.asciidoctor.ast.AbstractBlock;
-
-public class PlantUMLRulePlugin implements RuleLanguagePlugin {
+public class PlantUMLRulePlugin extends AbstractCypherLanguagePlugin {
 
     private static final Pattern PLANTUML_PATTERN = Pattern.compile("^\\s*(@startuml\\s+.*@enduml)\\s.*", Pattern.DOTALL);
 
@@ -47,44 +41,100 @@ public class PlantUMLRulePlugin implements RuleLanguagePlugin {
 
     @Override
     public <T extends ExecutableRule<?>> Result<T> execute(T executableRule, Map<String, Object> ruleParameters, Severity severity, AnalyzerContext context)
-            throws RuleException {
+        throws RuleException {
         String diagramSource = getDiagramSource(executableRule);
         SourceStringReader reader = new SourceStringReader(diagramSource);
         List<BlockUml> blocks = reader.getBlocks();
         Diagram diagram = blocks.get(0).getDiagram();
         if (diagram instanceof CucaDiagram) {
-            return evaluate((CucaDiagram) diagram, executableRule, severity, context);
+            return evaluate((CucaDiagram) diagram, executableRule, ruleParameters, severity, context);
         }
         throw new RuleException("Rule type " + diagram.getClass().getName() + " is not supported.");
     }
 
-    private <T extends ExecutableRule<?>> Result<T> evaluate(CucaDiagram diagram, T executableRule, Severity severity, AnalyzerContext context) {
+    private <T extends ExecutableRule<?>> Result<T> evaluate(CucaDiagram diagram, T executableRule, Map<String, Object> ruleParameters, Severity severity, AnalyzerContext context) throws RuleException {
         Map<String, Node> nodes = getNodes(diagram);
-        List<Link> links = diagram.getLinks();
-        return new Result<>(executableRule, Result.Status.SUCCESS, severity, emptyList(), emptyList());
+        Map<String, Relationship> relationships = getRelationships(diagram, nodes);
+        String statement = createStatement(nodes, relationships);
+        return execute(statement, executableRule, ruleParameters, severity, context);
     }
 
-    private Map<String, Node> getNodes(CucaDiagram diagram) {
-        Collection<ILeaf> leaves = diagram.getLeafsvalues();
-        Map<String, Node> nodes = new HashMap<>();
-        for (ILeaf leaf : leaves) {
-            Node.NodeBuilder nodeBuilder = Node.builder();
-            nodeBuilder.id(leaf.getUid());
-            Stereotype stereotype = leaf.getStereotype();
-            for (String label : stereotype.getMultipleLabels()) {
-                if (label.startsWith("+")) {
-                    nodeBuilder.setLabel(label.substring(1));
-                } else {
-                    nodeBuilder.matchLabel(label);
-                }
+    private String createStatement(Map<String, Node> nodes, Map<String, Relationship> relationships) {
+        StringBuilder matchBuilder = new StringBuilder();
+        StringBuilder mergeBuilder = new StringBuilder();
+        for (Node node : nodes.values()) {
+            Set<String> matchLabels = node.getMatchLabels();
+            if (!matchLabels.isEmpty()) {
+                commaNewLine(matchBuilder);
+                indent(matchBuilder);
+                matchBuilder.append("(").append(node.getId());
+                addNodeLabels(matchBuilder, matchLabels);
+                matchBuilder.append(")");
             }
-            Node node = nodeBuilder.build();
-            nodes.put(node.id, node);
-            for (CharSequence charSequence : leaf.getDisplay()) {
-                // Extract attributes
+            Set<String> mergeLabels = node.getMergeLabels();
+            if (!mergeLabels.isEmpty()) {
+                newLine(mergeBuilder);
+                mergeBuilder.append("SET");
+                newLine(mergeBuilder);
+                indent(mergeBuilder);
+                mergeBuilder.append(node.getId());
+                addNodeLabels(mergeBuilder, mergeLabels);
             }
         }
-        return nodes;
+        for (Relationship relationship : relationships.values()) {
+            if (relationship.getMatchType() != null) {
+                commaNewLine(matchBuilder);
+                indent(matchBuilder);
+                addRelationship(relationship, relationship.getMatchType(), matchBuilder);
+            }
+            if (relationship.getMergeType() != null) {
+                newLine(mergeBuilder);
+                mergeBuilder.append("MERGE");
+                newLine(mergeBuilder);
+                indent(mergeBuilder);
+                addRelationship(relationship, relationship.getMergeType(), mergeBuilder);
+            }
+        }
+        StringBuilder statement = new StringBuilder();
+        statement.append("MATCH");
+        newLine(statement);
+        statement.append(matchBuilder);
+        newLine(statement);
+        statement.append(mergeBuilder);
+        newLine(statement);
+        statement.append("RETURN");
+        newLine(statement);
+        indent(statement);
+        statement.append("*");
+        return statement.toString();
+    }
+
+    private void addRelationship(Relationship relationship, String type, StringBuilder builder) {
+        builder.append('(').append(relationship.getFrom().getId()).append(')');
+        builder.append("-[").append(relationship.getId()).append(":").append(type).append("]->");
+        builder.append('(').append(relationship.getTo().getId()).append(')');
+    }
+
+    private void addNodeLabels(StringBuilder builder, Set<String> labels) {
+        for (String label : labels) {
+            builder.append(':').append(label);
+        }
+    }
+
+    private void commaNewLine(StringBuilder builder) {
+        if (builder.length() > 0) {
+            builder.append(',').append("\n");
+        }
+    }
+
+    private void newLine(StringBuilder builder) {
+        if (builder.length() > 0) {
+            builder.append("\n");
+        }
+    }
+
+    private void indent(StringBuilder builder) {
+        builder.append("  ");
     }
 
     private <T extends ExecutableRule<?>> String getDiagramSource(T executableRule) throws RuleException {
@@ -113,17 +163,59 @@ public class PlantUMLRulePlugin implements RuleLanguagePlugin {
         return new File(imagesDirectory);
     }
 
-    @Builder
-    @Getter
-    @ToString
-    private static class Node {
+    private Map<String, Node> getNodes(CucaDiagram diagram) {
+        Map<String, Node> nodes = new LinkedHashMap<>();
+        for (ILeaf leaf : diagram.getLeafsvalues()) {
+            Node.NodeBuilder nodeBuilder = Node.builder().id(leaf.getUid());
+            for (String stereoType : leaf.getStereotype().getMultipleLabels()) {
+                String label = trimAndReplaceUnderScore(stereoType);
+                if (label.startsWith("+")) {
+                    nodeBuilder.mergeLabel(label.substring(1));
+                } else {
+                    nodeBuilder.matchLabel(label);
+                }
+            }
+            Node node = nodeBuilder.build();
+            nodes.put(node.getId(), node);
+            for (CharSequence charSequence : leaf.getDisplay()) {
+                // Extract attributes
+            }
+        }
+        return nodes;
+    }
 
-        private String id;
+    private String trimAndReplaceUnderScore(String value) {
+        return value.trim().replace(' ', '_');
+    }
 
-        @Singular
-        private Set<String> matchLabels;
-
-        @Singular
-        private Set<String> setLabels;
+    private Map<String, Relationship> getRelationships(CucaDiagram diagram, Map<String, Node> nodes) throws RuleException {
+        LinkedHashMap<String, Relationship> relationships = new LinkedHashMap<>();
+        for (Link link : diagram.getLinks()) {
+            Relationship.RelationshipBuilder builder = Relationship.builder().id(link.getUid().toLowerCase());
+            Display display = link.getLabel();
+            String relationType;
+            if (display.size() == 1) {
+                relationType = trimAndReplaceUnderScore(new StringBuffer(display.get(0)).toString()).toUpperCase();
+            } else {
+                throw new RuleException("Expecting a type on relation " + link);
+            }
+            if (relationType.startsWith("+")) {
+                builder.mergeType(relationType.substring(1));
+            } else {
+                builder.matchType(relationType);
+            }
+            Node entity1 = nodes.get(link.getEntity1().getUid());
+            Node entity2 = nodes.get(link.getEntity2().getUid());
+            if (link.isInverted()) {
+                builder.from(entity2);
+                builder.to(entity1);
+            } else {
+                builder.from(entity1);
+                builder.to(entity2);
+            }
+            Relationship relationship = builder.build();
+            relationships.put(relationship.getId(), relationship);
+        }
+        return relationships;
     }
 }
