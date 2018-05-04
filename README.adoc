@@ -1,0 +1,6 @@
+:toc:
+= jQAssistant PlantUML Rule Plugin
+
+This project will provide a http://jqassistant.org/[jQAssistant] plugin for executing http://plantuml.com/[PlantUML] diagrams as rules (concepts or constraints).
+
+For an example refer to link:src/test/resources/META-INF/jqassistant-rules/plantuml-rule-test.adoc[]

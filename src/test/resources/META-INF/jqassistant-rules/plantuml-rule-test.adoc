@@ -1,4 +1,4 @@
-= PlantUML
+= PlantUML Rules
 
 == Idea
 
