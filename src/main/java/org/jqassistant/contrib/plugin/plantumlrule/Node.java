@@ -14,6 +14,8 @@ class Node {
 
     private String id;
 
+    private Label label;
+
     @Singular
     private Set<String> matchLabels;
 

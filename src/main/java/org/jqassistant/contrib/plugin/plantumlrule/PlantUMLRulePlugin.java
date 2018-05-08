@@ -31,8 +31,6 @@ import org.asciidoctor.ast.AbstractBlock;
 
 public class PlantUMLRulePlugin extends AbstractCypherLanguagePlugin {
 
-    public static final Pattern LABEL_PATTERN = Pattern.compile("(\\w+)?\\s?(\\{.*})?");
-
     private static final Pattern PLANTUML_PATTERN = Pattern.compile("^\\s*(@startuml\\s+.*@enduml)\\s.*", Pattern.DOTALL);
 
     private static final StatementBuilder STATEMENT_BUILDER = new StatementBuilder();
@@ -49,7 +47,7 @@ public class PlantUMLRulePlugin extends AbstractCypherLanguagePlugin {
 
     @Override
     public <T extends ExecutableRule<?>> Result<T> execute(T executableRule, Map<String, Object> ruleParameters, Severity severity, AnalyzerContext context)
-            throws RuleException {
+        throws RuleException {
         String diagramSource = getDiagramSource(executableRule);
         SourceStringReader reader = new SourceStringReader(diagramSource);
         List<BlockUml> blocks = reader.getBlocks();
@@ -61,7 +59,7 @@ public class PlantUMLRulePlugin extends AbstractCypherLanguagePlugin {
     }
 
     private <T extends ExecutableRule<?>> Result<T> evaluate(CucaDiagram diagram, T executableRule, Map<String, Object> ruleParameters, Severity severity,
-            AnalyzerContext context) throws RuleException {
+                                                             AnalyzerContext context) throws RuleException {
         Map<String, Node> nodes = getNodes(diagram);
         Map<String, Relationship> relationships = getRelationships(diagram, nodes);
         String statement = STATEMENT_BUILDER.create(nodes, relationships);
@@ -107,13 +105,21 @@ public class PlantUMLRulePlugin extends AbstractCypherLanguagePlugin {
                     nodeBuilder.matchLabel(label);
                 }
             }
+            nodeBuilder.label(getLabel(leaf));
             Node node = nodeBuilder.build();
             nodes.put(node.getId(), node);
-            for (CharSequence charSequence : leaf.getDisplay()) {
-                // Extract attributes
-            }
         }
         return nodes;
+    }
+
+    private Label getLabel(ILeaf leaf) {
+        for (CharSequence charSequence : leaf.getDisplay()) {
+            Label label = Label.getLabel(charSequence);
+            if (label != null) {
+                return label;
+            }
+        }
+        return null;
     }
 
     private String trimAndReplaceUnderScore(String value) {

@@ -15,7 +15,7 @@ public class LabelPatternTest {
     public void matchWithAlias() {
         List<String> expressions = asList("A", "A {x:\"foo\"}", "A {x:\"foo\",y:\"bar\"}", "A {value:42}");
         for (String expression : expressions) {
-            Matcher matcher = PlantUMLRulePlugin.LABEL_PATTERN.matcher(expression);
+            Matcher matcher = Label.LABEL_PATTERN.matcher(expression);
             assertThat(matcher.matches(), equalTo(true));
             assertThat(matcher.group(1), equalTo("A"));
         }
@@ -25,7 +25,7 @@ public class LabelPatternTest {
     public void matchWithoutAlias() {
         List<String> expressions = asList("{x:\"foo\"}", "{x:\"foo\",y:\"bar\"}", "{value:42}");
         for (String expression : expressions) {
-            Matcher matcher = PlantUMLRulePlugin.LABEL_PATTERN.matcher(expression);
+            Matcher matcher = Label.LABEL_PATTERN.matcher(expression);
             assertThat(matcher.matches(), equalTo(true));
             String filter = matcher.group(2);
             assertThat(filter, startsWith("{"));
