@@ -31,6 +31,8 @@ import org.asciidoctor.ast.AbstractBlock;
 
 public class PlantUMLRulePlugin extends AbstractCypherLanguagePlugin {
 
+    public static final Pattern LABEL_PATTERN = Pattern.compile("(\\w+)?\\s?(\\{.*})?");
+
     private static final Pattern PLANTUML_PATTERN = Pattern.compile("^\\s*(@startuml\\s+.*@enduml)\\s.*", Pattern.DOTALL);
 
     private static final StatementBuilder STATEMENT_BUILDER = new StatementBuilder();
