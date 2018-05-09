@@ -1,16 +1,16 @@
 package org.jqassistant.contrib.plugin.plantumlrule;
 
-import lombok.*;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import lombok.*;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 @Builder
 @ToString
-public class Label {
+public class EntityParameter {
 
     public static final Pattern LABEL_PATTERN = Pattern.compile("(\\w+)?\\s?(\\{.*})?");
 
@@ -18,13 +18,12 @@ public class Label {
 
     private String filter;
 
-    public static Label getLabel(CharSequence label) {
+    public static EntityParameter getEntity(CharSequence label) {
         Matcher matcher = LABEL_PATTERN.matcher(label);
         if (!matcher.matches()) {
             return null;
         }
-        return Label.builder().alias(matcher.group(1)).filter(matcher.group(2)).build();
+        return EntityParameter.builder().alias(matcher.group(1)).filter(matcher.group(2)).build();
     }
-
 
 }

@@ -8,22 +8,32 @@ public class StatementBuilder {
     public String create(Map<String, Node> nodes, Map<String, Relationship> relationships) {
         StringBuilder matchBuilder = new StringBuilder();
         StringBuilder mergeBuilder = new StringBuilder();
+        StringBuilder returnBuilder = new StringBuilder();
         for (Node node : nodes.values()) {
+            EntityParameter entityParameter = node.getEntityParameter();
+            String alias = getAlias(entityParameter, returnBuilder);
             Set<String> matchLabels = node.getMatchLabels();
-            if (!matchLabels.isEmpty()) {
-                commaNewLine(matchBuilder);
-                indent(matchBuilder);
-                matchBuilder.append("(").append(node.getId());
-                addNodeLabels(matchBuilder, matchLabels);
-                matchBuilder.append(")");
+            commaNewLine(matchBuilder);
+            indent(matchBuilder);
+            matchBuilder.append("(");
+            if (alias != null) {
+                matchBuilder.append(alias);
             }
+            if (!matchLabels.isEmpty()) {
+                addNodeLabels(matchBuilder, matchLabels);
+                String filter = entityParameter.getFilter();
+                if (filter != null) {
+                    matchBuilder.append(filter);
+                }
+            }
+            matchBuilder.append(")");
             Set<String> mergeLabels = node.getMergeLabels();
             if (!mergeLabels.isEmpty()) {
                 newLine(mergeBuilder);
                 mergeBuilder.append("SET");
                 newLine(mergeBuilder);
                 indent(mergeBuilder);
-                mergeBuilder.append(node.getId());
+                mergeBuilder.append(alias);
                 addNodeLabels(mergeBuilder, mergeLabels);
             }
         }
@@ -55,10 +65,30 @@ public class StatementBuilder {
         return statement.toString();
     }
 
+    private String getAlias(EntityParameter entity, StringBuilder returnBuilder) {
+        String alias = null;
+        if (entity.getAlias() != null) {
+            alias = entity.getAlias();
+            commaNewLine(returnBuilder);
+            indent(returnBuilder);
+            returnBuilder.append(alias);
+        }
+        return alias;
+    }
+
     private void addRelationship(Relationship relationship, String type, StringBuilder builder) {
-        builder.append('(').append(relationship.getFrom().getId()).append(')');
+        addRelationshipNode(relationship.getFrom(), builder);
         builder.append("-[").append(relationship.getId()).append(":").append(type).append("]->");
-        builder.append('(').append(relationship.getTo().getId()).append(')');
+        addRelationshipNode(relationship.getTo(), builder);
+    }
+
+    private void addRelationshipNode(Node node, StringBuilder builder) {
+        builder.append('(');
+        String toAlias = node.getEntityParameter().getAlias();
+        if (toAlias != null) {
+            builder.append(toAlias);
+        }
+        builder.append(')');
     }
 
     private void addNodeLabels(StringBuilder builder, Set<String> labels) {

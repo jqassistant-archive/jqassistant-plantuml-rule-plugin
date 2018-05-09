@@ -14,7 +14,7 @@ class Node {
 
     private String id;
 
-    private Label label;
+    private EntityParameter entityParameter;
 
     @Singular
     private Set<String> matchLabels;

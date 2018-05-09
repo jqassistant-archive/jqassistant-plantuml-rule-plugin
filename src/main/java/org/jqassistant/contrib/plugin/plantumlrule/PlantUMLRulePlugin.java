@@ -105,21 +105,21 @@ public class PlantUMLRulePlugin extends AbstractCypherLanguagePlugin {
                     nodeBuilder.matchLabel(label);
                 }
             }
-            nodeBuilder.label(getLabel(leaf));
+            nodeBuilder.entityParameter(getEntityParameter(leaf.getDisplay()));
             Node node = nodeBuilder.build();
             nodes.put(node.getId(), node);
         }
         return nodes;
     }
 
-    private Label getLabel(ILeaf leaf) {
-        for (CharSequence charSequence : leaf.getDisplay()) {
-            Label label = Label.getLabel(charSequence);
-            if (label != null) {
-                return label;
+    private EntityParameter getEntityParameter(Display display) {
+        for (CharSequence charSequence : display) {
+            EntityParameter entity = EntityParameter.getEntity(charSequence);
+            if (entity != null) {
+                return entity;
             }
         }
-        return null;
+        return EntityParameter.builder().build();
     }
 
     private String trimAndReplaceUnderScore(String value) {
@@ -133,10 +133,12 @@ public class PlantUMLRulePlugin extends AbstractCypherLanguagePlugin {
             Display display = link.getLabel();
             String relationType;
             if (display.size() == 1) {
-                relationType = trimAndReplaceUnderScore(new StringBuffer(display.get(0)).toString()).toUpperCase();
+                CharSequence charSequence = display.get(0);
+                relationType = trimAndReplaceUnderScore(new StringBuffer(charSequence).toString()).toUpperCase();
             } else {
                 throw new RuleException("Expecting a type on relation " + link);
             }
+            builder.entityParameter(getEntityParameter(display));
             if (relationType.startsWith("+")) {
                 builder.mergeType(relationType.substring(1));
             } else {

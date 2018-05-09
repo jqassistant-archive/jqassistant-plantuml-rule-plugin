@@ -15,6 +15,8 @@ class Relationship {
 
     private Node to;
 
+    private EntityParameter entityParameter;
+
     private String matchType;
 
     private String mergeType;
