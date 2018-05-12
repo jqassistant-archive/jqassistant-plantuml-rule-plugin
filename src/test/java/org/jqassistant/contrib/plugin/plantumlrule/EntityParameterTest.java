@@ -1,59 +1,59 @@
 package org.jqassistant.contrib.plugin.plantumlrule;
 
+
+import org.junit.Test;
+
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-import org.junit.Test;
-
-public class EntityTest {
+public class EntityParameterTest {
 
     @Test
     public void alias() {
-        EntityParameter a = EntityParameter.getEntity("A");
+        EntityParameter a = EntityParameter.getEntityParameter("A");
         assertThat(a.getAlias(), equalTo("A"));
         assertThat(a.getFilter(), nullValue());
     }
 
     @Test
     public void aliasWithSingleAttributeFilter() {
-        EntityParameter a = EntityParameter.getEntity("A {x:\"foo\"}");
+        EntityParameter a = EntityParameter.getEntityParameter("A {x:\"foo\"}");
         assertThat(a.getAlias(), equalTo("A"));
-        assertThat(a.getFilter(), equalTo("{x:\"foo\")}"));
+        assertThat(a.getFilter(), equalTo("{x:\"foo\"}"));
     }
 
     @Test
     public void aliasWithMultiAttributeFilter() {
-        EntityParameter a = EntityParameter.getEntity("A {x:\"foo\", y:\"bar\"}");
+        EntityParameter a = EntityParameter.getEntityParameter("A {x:\"foo\", y:\"bar\"}");
         assertThat(a.getAlias(), equalTo("A"));
         assertThat(a.getFilter(), equalTo("{x:\"foo\", y:\"bar\"}"));
     }
 
     @Test
     public void aliasWithNumberAttributeFilter() {
-        EntityParameter a = EntityParameter.getEntity("A {value:42}");
+        EntityParameter a = EntityParameter.getEntityParameter("A {value:42}");
         assertThat(a.getAlias(), equalTo("A"));
         assertThat(a.getFilter(), equalTo("{value:42}"));
     }
 
     @Test
     public void filterOnly() {
-        EntityParameter a = EntityParameter.getEntity("{value:42}");
+        EntityParameter a = EntityParameter.getEntityParameter("{value:42}");
         assertThat(a.getAlias(), nullValue());
         assertThat(a.getFilter(), equalTo("{value:42}"));
     }
 
     @Test
     public void empty() {
-        EntityParameter a = EntityParameter.getEntity("");
+        EntityParameter a = EntityParameter.getEntityParameter("");
         assertThat(a.getAlias(), nullValue());
         assertThat(a.getFilter(), nullValue());
     }
 
     @Test
     public void nul() {
-        EntityParameter a = EntityParameter.getEntity(null);
-        assertThat(a.getAlias(), nullValue());
-        assertThat(a.getFilter(), nullValue());
+        EntityParameter a = EntityParameter.getEntityParameter(null);
+        assertThat(a, nullValue());
     }
 }

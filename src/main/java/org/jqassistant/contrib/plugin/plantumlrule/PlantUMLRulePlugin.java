@@ -114,7 +114,7 @@ public class PlantUMLRulePlugin extends AbstractCypherLanguagePlugin {
 
     private EntityParameter getEntityParameter(Display display) {
         for (CharSequence charSequence : display) {
-            EntityParameter entity = EntityParameter.getEntity(charSequence);
+            EntityParameter entity = EntityParameter.getEntityParameter(charSequence);
             if (entity != null) {
                 return entity;
             }

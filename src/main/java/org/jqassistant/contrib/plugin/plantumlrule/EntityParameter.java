@@ -18,7 +18,10 @@ public class EntityParameter {
 
     private String filter;
 
-    public static EntityParameter getEntity(CharSequence label) {
+    public static EntityParameter getEntityParameter(CharSequence label) {
+        if (label == null) {
+            return null;
+        }
         Matcher matcher = LABEL_PATTERN.matcher(label);
         if (!matcher.matches()) {
             return null;
