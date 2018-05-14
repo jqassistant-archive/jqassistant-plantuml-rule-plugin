@@ -1,59 +1,58 @@
 package org.jqassistant.contrib.plugin.plantumlrule;
 
-
-import org.junit.Test;
-
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-public class EntityParameterTest {
+import org.junit.Test;
+
+public class NodeParameterTest {
 
     @Test
-    public void alias() {
-        EntityParameter a = EntityParameter.getEntityParameter("A");
+    public void nodeAlias() {
+        NodeParameter a = NodeParameter.getNodeParameter("A");
         assertThat(a.getAlias(), equalTo("A"));
         assertThat(a.getFilter(), nullValue());
     }
 
     @Test
-    public void aliasWithSingleAttributeFilter() {
-        EntityParameter a = EntityParameter.getEntityParameter("A {x:\"foo\"}");
+    public void nodeAliasWithSingleAttributeFilter() {
+        NodeParameter a = NodeParameter.getNodeParameter("A {x:\"foo\"}");
         assertThat(a.getAlias(), equalTo("A"));
         assertThat(a.getFilter(), equalTo("{x:\"foo\"}"));
     }
 
     @Test
-    public void aliasWithMultiAttributeFilter() {
-        EntityParameter a = EntityParameter.getEntityParameter("A {x:\"foo\", y:\"bar\"}");
+    public void nodeAliasWithMultiAttributeFilter() {
+        NodeParameter a = NodeParameter.getNodeParameter("A {x:\"foo\", y:\"bar\"}");
         assertThat(a.getAlias(), equalTo("A"));
         assertThat(a.getFilter(), equalTo("{x:\"foo\", y:\"bar\"}"));
     }
 
     @Test
-    public void aliasWithNumberAttributeFilter() {
-        EntityParameter a = EntityParameter.getEntityParameter("A {value:42}");
+    public void nodeAliasWithNumberAttributeFilter() {
+        NodeParameter a = NodeParameter.getNodeParameter("A {value:42}");
         assertThat(a.getAlias(), equalTo("A"));
         assertThat(a.getFilter(), equalTo("{value:42}"));
     }
 
     @Test
-    public void filterOnly() {
-        EntityParameter a = EntityParameter.getEntityParameter("{value:42}");
+    public void nodeFilterOnly() {
+        NodeParameter a = NodeParameter.getNodeParameter("{value:42}");
         assertThat(a.getAlias(), nullValue());
         assertThat(a.getFilter(), equalTo("{value:42}"));
     }
 
     @Test
-    public void empty() {
-        EntityParameter a = EntityParameter.getEntityParameter("");
+    public void emptyNode() {
+        NodeParameter a = NodeParameter.getNodeParameter("");
         assertThat(a.getAlias(), nullValue());
         assertThat(a.getFilter(), nullValue());
     }
 
     @Test
-    public void nul() {
-        EntityParameter a = EntityParameter.getEntityParameter(null);
+    public void nullNode() {
+        NodeParameter a = NodeParameter.getNodeParameter(null);
         assertThat(a, nullValue());
     }
 }

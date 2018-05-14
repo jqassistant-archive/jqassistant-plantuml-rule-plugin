@@ -15,7 +15,7 @@ class Relationship {
 
     private Node to;
 
-    private EntityParameter entityParameter;
+    private RelationshipParameter relationshipParameter;
 
     private String matchType;
 

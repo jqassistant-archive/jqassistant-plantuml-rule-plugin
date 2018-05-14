@@ -10,23 +10,23 @@ import lombok.*;
 @Getter
 @Builder
 @ToString
-public class EntityParameter {
+public class NodeParameter {
 
-    public static final Pattern LABEL_PATTERN = Pattern.compile("(\\w+)?\\s?(\\{.*})?");
+    public static final Pattern NODE_PATTERN = Pattern.compile("(?<alias>\\w+)?\\s?(?<filter>\\{.*})?");
 
     private String alias;
 
     private String filter;
 
-    public static EntityParameter getEntityParameter(CharSequence label) {
+    public static NodeParameter getNodeParameter(CharSequence label) {
         if (label == null) {
             return null;
         }
-        Matcher matcher = LABEL_PATTERN.matcher(label);
+        Matcher matcher = NODE_PATTERN.matcher(label);
         if (!matcher.matches()) {
             return null;
         }
-        return EntityParameter.builder().alias(matcher.group(1)).filter(matcher.group(2)).build();
+        return NodeParameter.builder().alias(matcher.group("alias")).filter(matcher.group("filter")).build();
     }
 
 }

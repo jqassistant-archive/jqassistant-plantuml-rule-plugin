@@ -10,7 +10,7 @@ public class StatementBuilder {
         StringBuilder mergeBuilder = new StringBuilder();
         StringBuilder returnBuilder = new StringBuilder();
         for (Node node : nodes.values()) {
-            EntityParameter entityParameter = node.getEntityParameter();
+            NodeParameter entityParameter = node.getNodeParameter();
             String alias = getAlias(entityParameter, returnBuilder);
             Set<String> matchLabels = node.getMatchLabels();
             commaNewLine(matchBuilder);
@@ -65,7 +65,7 @@ public class StatementBuilder {
         return statement.toString();
     }
 
-    private String getAlias(EntityParameter entity, StringBuilder returnBuilder) {
+    private String getAlias(NodeParameter entity, StringBuilder returnBuilder) {
         String alias = null;
         if (entity.getAlias() != null) {
             alias = entity.getAlias();
@@ -84,7 +84,7 @@ public class StatementBuilder {
 
     private void addRelationshipNode(Node node, StringBuilder builder) {
         builder.append('(');
-        String toAlias = node.getEntityParameter().getAlias();
+        String toAlias = node.getNodeParameter().getAlias();
         if (toAlias != null) {
             builder.append(toAlias);
         }

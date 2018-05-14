@@ -47,7 +47,7 @@ public class PlantUMLRulePlugin extends AbstractCypherLanguagePlugin {
 
     @Override
     public <T extends ExecutableRule<?>> Result<T> execute(T executableRule, Map<String, Object> ruleParameters, Severity severity, AnalyzerContext context)
-        throws RuleException {
+            throws RuleException {
         String diagramSource = getDiagramSource(executableRule);
         SourceStringReader reader = new SourceStringReader(diagramSource);
         List<BlockUml> blocks = reader.getBlocks();
@@ -59,7 +59,7 @@ public class PlantUMLRulePlugin extends AbstractCypherLanguagePlugin {
     }
 
     private <T extends ExecutableRule<?>> Result<T> evaluate(CucaDiagram diagram, T executableRule, Map<String, Object> ruleParameters, Severity severity,
-                                                             AnalyzerContext context) throws RuleException {
+            AnalyzerContext context) throws RuleException {
         Map<String, Node> nodes = getNodes(diagram);
         Map<String, Relationship> relationships = getRelationships(diagram, nodes);
         String statement = STATEMENT_BUILDER.create(nodes, relationships);
@@ -105,25 +105,11 @@ public class PlantUMLRulePlugin extends AbstractCypherLanguagePlugin {
                     nodeBuilder.matchLabel(label);
                 }
             }
-            nodeBuilder.entityParameter(getEntityParameter(leaf.getDisplay()));
+            nodeBuilder.nodeParameter(getNodeParameter(leaf.getDisplay()));
             Node node = nodeBuilder.build();
             nodes.put(node.getId(), node);
         }
         return nodes;
-    }
-
-    private EntityParameter getEntityParameter(Display display) {
-        for (CharSequence charSequence : display) {
-            EntityParameter entity = EntityParameter.getEntityParameter(charSequence);
-            if (entity != null) {
-                return entity;
-            }
-        }
-        return EntityParameter.builder().build();
-    }
-
-    private String trimAndReplaceUnderScore(String value) {
-        return value.trim().replace(' ', '_');
     }
 
     private Map<String, Relationship> getRelationships(CucaDiagram diagram, Map<String, Node> nodes) throws RuleException {
@@ -138,7 +124,7 @@ public class PlantUMLRulePlugin extends AbstractCypherLanguagePlugin {
             } else {
                 throw new RuleException("Expecting a type on relation " + link);
             }
-            builder.entityParameter(getEntityParameter(display));
+            builder.relationshipParameter(getRelationshipParameter(display));
             if (relationType.startsWith("+")) {
                 builder.mergeType(relationType.substring(1));
             } else {
@@ -157,5 +143,29 @@ public class PlantUMLRulePlugin extends AbstractCypherLanguagePlugin {
             relationships.put(relationship.getId(), relationship);
         }
         return relationships;
+    }
+
+    private NodeParameter getNodeParameter(Display display) {
+        for (CharSequence charSequence : display) {
+            NodeParameter nodeParameter = NodeParameter.getNodeParameter(charSequence);
+            if (nodeParameter != null) {
+                return nodeParameter;
+            }
+        }
+        return NodeParameter.builder().build();
+    }
+
+    private RelationshipParameter getRelationshipParameter(Display display) {
+        for (CharSequence charSequence : display) {
+            RelationshipParameter relationshipParameter = RelationshipParameter.getRelationshipParameter(charSequence);
+            if (relationshipParameter != null) {
+                return relationshipParameter;
+            }
+        }
+        return RelationshipParameter.builder().build();
+    }
+
+    private String trimAndReplaceUnderScore(String value) {
+        return value.trim().replace(' ', '_');
     }
 }
