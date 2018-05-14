@@ -12,7 +12,7 @@
     <artifactId>jqassistant-plantuml-rule-plugin</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 
-    <name>jQAssistant Asciidoc Report Plugin</name>
+    <name>jQAssistant PlantUML Rule Plugin</name>
     <description>The jQAssistant plugin for executing PlantUML rules from Asciidoc files.</description>
     <url>https://github.com/jqassistant-contrib/jqassistant-plantuml-rule-plugin</url>
 
@@ -90,7 +90,7 @@
             <!-- unit tests -->
             <dependency>
                 <groupId>com.buschmais.jqassistant.neo4jserver</groupId>
-                <artifactId>neo4jv3</artifactId>
+                <artifactId>neo4jv2</artifactId>
                 <version>${com.buschmais.jqassistant.version}</version>
                 <scope>test</scope>
             </dependency>
