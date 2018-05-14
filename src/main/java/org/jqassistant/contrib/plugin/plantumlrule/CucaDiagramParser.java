@@ -1,15 +1,10 @@
 package org.jqassistant.contrib.plugin.plantumlrule;
 
-import net.sourceforge.plantuml.cucadiagram.CucaDiagram;
-import net.sourceforge.plantuml.cucadiagram.Display;
-import net.sourceforge.plantuml.cucadiagram.ILeaf;
-import net.sourceforge.plantuml.cucadiagram.Link;
+import net.sourceforge.plantuml.cucadiagram.*;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static com.google.common.base.CaseFormat.UPPER_CAMEL;
-import static com.google.common.base.CaseFormat.UPPER_UNDERSCORE;
 import static java.util.Collections.unmodifiableMap;
 
 public class CucaDiagramParser {
@@ -32,22 +27,35 @@ public class CucaDiagramParser {
     }
 
     private Map<String, Node> getNodes(CucaDiagram diagram) {
+        IGroup rootGroup = diagram.getRootGroup();
+        return getNodes(rootGroup);
+    }
+
+    private Map<String, Node> getNodes(IGroup group) {
         Map<String, Node> nodes = new LinkedHashMap<>();
-        for (ILeaf leaf : diagram.getLeafsvalues()) {
-            Node.NodeBuilder nodeBuilder = Node.builder().id(leaf.getUid());
-            for (String stereoType : leaf.getStereotype().getMultipleLabels()) {
-                String label = stereoType.trim();
-                if (label.startsWith("+")) {
-                    nodeBuilder.mergeLabel(label.substring(1));
-                } else {
-                    nodeBuilder.matchLabel(label);
-                }
-            }
-            nodeBuilder.nodeParameter(getNodeParameter(leaf.getDisplay()));
-            Node node = nodeBuilder.build();
-            nodes.put(node.getId(), node);
+        for (IGroup child: group.getChildren()) {
+            addNode(child, nodes);
+            nodes.putAll(getNodes(child));
+        }
+        for (ILeaf leaf : group.getLeafsDirect()) {
+            addNode(leaf, nodes);
         }
         return nodes;
+    }
+
+    private void addNode(IEntity entity, Map<String, Node> nodes) {
+        Node.NodeBuilder nodeBuilder = Node.builder().id(entity.getUid());
+        for (String stereoType : entity.getStereotype().getMultipleLabels()) {
+            String label = stereoType.trim();
+            if (label.startsWith("+")) {
+                nodeBuilder.mergeLabel(label.substring(1));
+            } else {
+                nodeBuilder.matchLabel(label);
+            }
+        }
+        nodeBuilder.nodeParameter(getNodeParameter(entity.getDisplay()));
+        Node node = nodeBuilder.build();
+        nodes.put(node.getId(), node);
     }
 
     private Map<String, Relationship> getRelationships(CucaDiagram diagram, Map<String, Node> nodes) {

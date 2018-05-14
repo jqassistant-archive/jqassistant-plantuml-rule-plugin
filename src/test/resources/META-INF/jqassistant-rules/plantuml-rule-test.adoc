@@ -58,6 +58,22 @@ RETURN
 root, a, b, c, d1, d2
 ----
 
+[[plantuml-rule:NestedPackageDiagramAdoc]]
+[plantuml,role=concept]
+.The package named "root" is labeled with `Root` and contains packages representing the layers of the application. They are labeled with `Layer`.
+----
+@startuml
+skinparam componentStyle uml2
+
+package "{name:'root'}" as root <<Package>> <<+Root>> {
+  package "layer" as layer <<Package>> <<+Layer>>
+}
+
+root -> layer : :CONTAINS
+
+@enduml
+----
+
 [[plantuml-rule:ClassDiagramAdoc]]
 [plantuml,role=concept]
 .A class diagram
