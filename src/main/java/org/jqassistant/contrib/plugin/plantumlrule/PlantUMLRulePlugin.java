@@ -47,8 +47,9 @@ public class PlantUMLRulePlugin extends AbstractCypherLanguagePlugin {
 
     @Override
     public <T extends ExecutableRule<?>> Result<T> execute(T executableRule, Map<String, Object> ruleParameters, Severity severity, AnalyzerContext context)
-            throws RuleException {
+        throws RuleException {
         String diagramSource = getDiagramSource(executableRule);
+        context.getLogger().info(executableRule + "\n----\n" + diagramSource + "\n----");
         SourceStringReader reader = new SourceStringReader(diagramSource);
         List<BlockUml> blocks = reader.getBlocks();
         Diagram diagram = blocks.get(0).getDiagram();
@@ -59,11 +60,10 @@ public class PlantUMLRulePlugin extends AbstractCypherLanguagePlugin {
     }
 
     private <T extends ExecutableRule<?>> Result<T> evaluate(CucaDiagram diagram, T executableRule, Map<String, Object> ruleParameters, Severity severity,
-            AnalyzerContext context) throws RuleException {
-        Map<String, Node> nodes = getNodes(diagram);
-        Map<String, Relationship> relationships = getRelationships(diagram, nodes);
-        String statement = STATEMENT_BUILDER.create(nodes, relationships);
-        context.getLogger().info(executableRule + "\n----\n" + statement + "\n----");
+                                                             AnalyzerContext context) throws RuleException {
+        CucaDiagramParser cucaDiagramParser = new CucaDiagramParser(diagram);
+        String statement = STATEMENT_BUILDER.create(cucaDiagramParser.getNodes(), cucaDiagramParser.getRelationships());
+        context.getLogger().info("\n" + statement + "\n----");
         return execute(statement, executableRule, ruleParameters, severity, context);
     }
 
@@ -91,81 +91,5 @@ public class PlantUMLRulePlugin extends AbstractCypherLanguagePlugin {
     private File getImagesDirectory(AbstractBlock abstractBlock) {
         String imagesDirectory = (String) abstractBlock.getDocument().getAttributes().get(AsciidoctorFactory.ATTRIBUTE_IMAGES_OUT_DIR);
         return new File(imagesDirectory);
-    }
-
-    private Map<String, Node> getNodes(CucaDiagram diagram) {
-        Map<String, Node> nodes = new LinkedHashMap<>();
-        for (ILeaf leaf : diagram.getLeafsvalues()) {
-            Node.NodeBuilder nodeBuilder = Node.builder().id(leaf.getUid());
-            for (String stereoType : leaf.getStereotype().getMultipleLabels()) {
-                String label = trimAndReplaceUnderScore(stereoType);
-                if (label.startsWith("+")) {
-                    nodeBuilder.mergeLabel(label.substring(1));
-                } else {
-                    nodeBuilder.matchLabel(label);
-                }
-            }
-            nodeBuilder.nodeParameter(getNodeParameter(leaf.getDisplay()));
-            Node node = nodeBuilder.build();
-            nodes.put(node.getId(), node);
-        }
-        return nodes;
-    }
-
-    private Map<String, Relationship> getRelationships(CucaDiagram diagram, Map<String, Node> nodes) throws RuleException {
-        LinkedHashMap<String, Relationship> relationships = new LinkedHashMap<>();
-        for (Link link : diagram.getLinks()) {
-            Relationship.RelationshipBuilder builder = Relationship.builder().id(link.getUid().toLowerCase());
-            Display display = link.getLabel();
-            String relationType;
-            if (display.size() == 1) {
-                CharSequence charSequence = display.get(0);
-                relationType = trimAndReplaceUnderScore(new StringBuffer(charSequence).toString()).toUpperCase();
-            } else {
-                throw new RuleException("Expecting a type on relation " + link);
-            }
-            builder.relationshipParameter(getRelationshipParameter(display));
-            if (relationType.startsWith("+")) {
-                builder.mergeType(relationType.substring(1));
-            } else {
-                builder.matchType(relationType);
-            }
-            Node entity1 = nodes.get(link.getEntity1().getUid());
-            Node entity2 = nodes.get(link.getEntity2().getUid());
-            if (link.isInverted()) {
-                builder.from(entity2);
-                builder.to(entity1);
-            } else {
-                builder.from(entity1);
-                builder.to(entity2);
-            }
-            Relationship relationship = builder.build();
-            relationships.put(relationship.getId(), relationship);
-        }
-        return relationships;
-    }
-
-    private NodeParameter getNodeParameter(Display display) {
-        for (CharSequence charSequence : display) {
-            NodeParameter nodeParameter = NodeParameter.getNodeParameter(charSequence);
-            if (nodeParameter != null) {
-                return nodeParameter;
-            }
-        }
-        return NodeParameter.builder().build();
-    }
-
-    private RelationshipParameter getRelationshipParameter(Display display) {
-        for (CharSequence charSequence : display) {
-            RelationshipParameter relationshipParameter = RelationshipParameter.getRelationshipParameter(charSequence);
-            if (relationshipParameter != null) {
-                return relationshipParameter;
-            }
-        }
-        return RelationshipParameter.builder().build();
-    }
-
-    private String trimAndReplaceUnderScore(String value) {
-        return value.trim().replace(' ', '_');
     }
 }

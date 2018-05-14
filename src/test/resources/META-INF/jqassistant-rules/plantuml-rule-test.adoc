@@ -15,17 +15,17 @@
 @startuml
 skinparam componentStyle uml2
 
-[Root {name:"root"}] as root <<Package>> <<+Root>>
-[A {name:"a"}] as a <<Package>> <<+Module>>
-[B {name:"b"}] as b <<Package>> <<+Module>>
-[C {name:"c"}] as c <<Package>> <<+Module>>
+[root {name:"root"}] as root <<Package>> <<+Root>>
+[a {name:"a"}] as a <<Package>> <<+Module>>
+[b {name:"b"}] as b <<Package>> <<+Module>>
+[c {name:"c"}] as c <<Package>> <<+Module>>
 
-root -up-> a : Contains
-root -up-> b : Contains
-root -up-> c : Contains
+root -up-> a : :CONTAINS
+root -up-> b : :CONTAINS
+root -up-> c : :CONTAINS
 
-b -> a : +Defines Dependency
-c -> a : +Defines Dependency
+b -> a : d1:+DEFINES_DEPENDENCY
+c -> a : d2:+DEFINES_DEPENDENCY
 
 @enduml
 ----
@@ -35,26 +35,27 @@ The example above will be translated into a cypher query like this:
 [source,cypher]
 ----
 MATCH
-  (n1:Package{name:"root"}),
-  (n2:Package{name:"a"}),
-  (n3:Package{name:"b"}),
-  (n4:Package{name:"c"}),
-  (n1)-[:CONTAINS]->(n2),
-  (n1)-[:CONTAINS]->(n3),
-  (n1)-[:CONTAINS]->(n4)
+  (root:Package{name:"root"}),
+  (a:Package{name:"a"}),
+  (b:Package{name:"b"}),
+  (c:Package{name:"c"}),
+  (root)-[:CONTAINS]->(a),
+  (root)-[:CONTAINS]->(b),
+  (root)-[:CONTAINS]->(c)
 SET
-  n1:Root
+  root:Root
 SET
-  n2:Module
+  a:Module
 SET
-  n3:Module
+  b:Module
 SET
-  n4:Module
+  c:Module
 MERGE
-  (n3)-[r1:DEFINES_DEPENDENCY]->(n2),
-  (n4)-[r2:DEFINES_DEPENDENCY]->(n2)
+  (b)-[d1:DEFINES_DEPENDENCY]->(a)
+MERGE
+  (c)-[d2:DEFINES_DEPENDENCY]->(a)
 RETURN
-  n1, n2, n3, n4, r1, r2
+root, a, b, c, d1, d2
 ----
 
 [[plantuml-rule:ClassDiagramAdoc]]
@@ -65,10 +66,10 @@ RETURN
 
 skinparam componentStyle uml2
 
-class "AbstractEntity{name:"AbstractEntity"}" as abstractEntity <<Type>>
-class "Entity" as entity <<Class>> <<+Entity>>
+class "{name:"AbstractEntity"}" as abstractEntity <<Type>>
+class "entity" as entity <<Class>> <<+Entity>>
 
-entity --|> abstractEntity  : Extends*
+entity -up-|> abstractEntity  : :EXTENDS*
 
 @enduml
 ----

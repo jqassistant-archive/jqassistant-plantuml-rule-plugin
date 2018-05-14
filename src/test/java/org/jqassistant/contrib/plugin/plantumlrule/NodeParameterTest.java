@@ -1,58 +1,52 @@
 package org.jqassistant.contrib.plugin.plantumlrule;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+
+import java.util.Collection;
+
+import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-import org.junit.Test;
-
+@RunWith(Parameterized.class)
 public class NodeParameterTest {
 
-    @Test
-    public void nodeAlias() {
-        NodeParameter a = NodeParameter.getNodeParameter("A");
-        assertThat(a.getAlias(), equalTo("A"));
-        assertThat(a.getFilter(), nullValue());
+    private String label;
+
+    private String expectedAlias;
+
+    private String expectedFilter;
+
+    public NodeParameterTest(String label, String expectedAlias, String expectedFilter) {
+        this.label = label;
+        this.expectedAlias = expectedAlias;
+        this.expectedFilter = expectedFilter;
+    }
+
+    @Parameters
+    public static Collection<Object[]> data() {
+        return asList(new Object[][]{
+            {null, null, null},
+            {"", null, null},
+            {"t", "t", null},
+            {"t{x:1}", "t", "{x:1}"},
+            {"t{x:1,y:\"foo\"}", "t", "{x:1,y:\"foo\"}"},
+            {"t { x:1, y:\"foo\" }", "t", "{ x:1, y:\"foo\" }"}
+        });
     }
 
     @Test
-    public void nodeAliasWithSingleAttributeFilter() {
-        NodeParameter a = NodeParameter.getNodeParameter("A {x:\"foo\"}");
-        assertThat(a.getAlias(), equalTo("A"));
-        assertThat(a.getFilter(), equalTo("{x:\"foo\"}"));
-    }
-
-    @Test
-    public void nodeAliasWithMultiAttributeFilter() {
-        NodeParameter a = NodeParameter.getNodeParameter("A {x:\"foo\", y:\"bar\"}");
-        assertThat(a.getAlias(), equalTo("A"));
-        assertThat(a.getFilter(), equalTo("{x:\"foo\", y:\"bar\"}"));
-    }
-
-    @Test
-    public void nodeAliasWithNumberAttributeFilter() {
-        NodeParameter a = NodeParameter.getNodeParameter("A {value:42}");
-        assertThat(a.getAlias(), equalTo("A"));
-        assertThat(a.getFilter(), equalTo("{value:42}"));
-    }
-
-    @Test
-    public void nodeFilterOnly() {
-        NodeParameter a = NodeParameter.getNodeParameter("{value:42}");
-        assertThat(a.getAlias(), nullValue());
-        assertThat(a.getFilter(), equalTo("{value:42}"));
-    }
-
-    @Test
-    public void emptyNode() {
-        NodeParameter a = NodeParameter.getNodeParameter("");
-        assertThat(a.getAlias(), nullValue());
-        assertThat(a.getFilter(), nullValue());
-    }
-
-    @Test
-    public void nullNode() {
-        NodeParameter a = NodeParameter.getNodeParameter(null);
-        assertThat(a, nullValue());
+    public void parse() {
+        NodeParameter nodeParameter = NodeParameter.getNodeParameter(label);
+        if (label == null) {
+            assertThat(nodeParameter, nullValue());
+        } else {
+            assertThat(nodeParameter.getAlias(), equalTo(expectedAlias));
+            assertThat(nodeParameter.getFilter(), equalTo(expectedFilter));
+        }
     }
 }

@@ -1,104 +1,68 @@
 package org.jqassistant.contrib.plugin.plantumlrule;
 
+import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
+import java.util.Arrays;
+import java.util.Collection;
+
+@RunWith(Parameterized.class)
 public class RelationshipParameterTest {
 
-    @Test
-    public void relationshipAlias() {
-        RelationshipParameter a = RelationshipParameter.getRelationshipParameter("EXTENDS");
-        assertThat(a.getAlias(), equalTo("EXTENDS"));
-        assertThat(a.getHops(), nullValue());
-        assertThat(a.getFilter(), nullValue());
+    private String label;
+
+    private String expectedAlias;
+
+    private String expectedType;
+
+    private String expectedHops;
+
+    private String expectedFilter;
+
+    public RelationshipParameterTest(String label, String expectedAlias, String expectedType, String expectedHops, String expectedFilter) {
+        this.label = label;
+        this.expectedAlias = expectedAlias;
+        this.expectedType = expectedType;
+        this.expectedHops = expectedHops;
+        this.expectedFilter = expectedFilter;
+    }
+
+    @Parameters
+    public static Collection<Object[]> data() {
+        return asList(new Object[][]{
+            {null, null, null, null, null},
+            {"", null, null, null, null},
+            {"e", "e", null, null, null},
+            {":EXTENDS", null, "EXTENDS", null, null},
+            {":+EXTENDS", null, "+EXTENDS", null, null},
+            {"e:EXTENDS", "e", "EXTENDS", null, null},
+            {"e:EXTENDS*", "e", "EXTENDS", "*", null},
+            {"e:EXTENDS*0..", "e", "EXTENDS", "*0..", null},
+            {"e:EXTENDS*..1", "e", "EXTENDS", "*..1", null},
+            {"e:EXTENDS*..1{x:1}", "e", "EXTENDS", "*..1", "{x:1}"},
+            {"e:EXTENDS*..1{x:1,y:\"foo\"}", "e", "EXTENDS", "*..1", "{x:1,y:\"foo\"}"},
+            {"e :EXTENDS *..1 { x:1, y:\"foo\" }", "e", "EXTENDS", "*..1", "{ x:1, y:\"foo\" }"},
+            {"e :+EXTENDS *..1 { x:1, y:\"foo\" }", "e", "+EXTENDS", "*..1", "{ x:1, y:\"foo\" }"}
+        });
     }
 
     @Test
-    public void relationshipAliasWithSingleAttributeFilter() {
-        RelationshipParameter a = RelationshipParameter.getRelationshipParameter("A {x:\"foo\"}");
-        assertThat(a.getAlias(), equalTo("A"));
-        assertThat(a.getHops(), nullValue());
-        assertThat(a.getFilter(), equalTo("{x:\"foo\"}"));
-    }
-
-    @Test
-    public void relationshipAliasWithMultiAttributeFilter() {
-        RelationshipParameter a = RelationshipParameter.getRelationshipParameter("A {x:\"foo\", y:\"bar\"}");
-        assertThat(a.getAlias(), equalTo("A"));
-        assertThat(a.getHops(), nullValue());
-        assertThat(a.getFilter(), equalTo("{x:\"foo\", y:\"bar\"}"));
-    }
-
-    @Test
-    public void relationshipAliasWithNumberAttributeFilter() {
-        RelationshipParameter a = RelationshipParameter.getRelationshipParameter("A {value:42}");
-        assertThat(a.getAlias(), equalTo("A"));
-        assertThat(a.getHops(), nullValue());
-        assertThat(a.getFilter(), equalTo("{value:42}"));
-    }
-
-    @Test
-    public void relationshipFilterOnly() {
-        RelationshipParameter a = RelationshipParameter.getRelationshipParameter("{value:42}");
-        assertThat(a.getAlias(), nullValue());
-        assertThat(a.getHops(), nullValue());
-        assertThat(a.getFilter(), equalTo("{value:42}"));
-    }
-
-    @Test
-    public void emptyRelationship() {
-        RelationshipParameter a = RelationshipParameter.getRelationshipParameter("");
-        assertThat(a.getAlias(), nullValue());
-        assertThat(a.getHops(), nullValue());
-        assertThat(a.getFilter(), nullValue());
-    }
-
-    @Test
-    public void nullRelationshipNode() {
-        RelationshipParameter a = RelationshipParameter.getRelationshipParameter(null);
-        assertThat(a, nullValue());
-    }
-
-    @Test
-    public void relationshipAliasWithHopsAndAttributeFilter() {
-        RelationshipParameter a = RelationshipParameter.getRelationshipParameter("A* {x:\"foo\", y:\"bar\"}");
-        assertThat(a.getAlias(), equalTo("A"));
-        assertThat(a.getHops(), equalTo("*"));
-        assertThat(a.getFilter(), equalTo("{x:\"foo\", y:\"bar\"}"));
-    }
-
-    @Test
-    public void relationshipAliasWithLowerBoundHopsAndAttributeFilter() {
-        RelationshipParameter a = RelationshipParameter.getRelationshipParameter("A*0.. {x:\"foo\", y:\"bar\"}");
-        assertThat(a.getAlias(), equalTo("A"));
-        assertThat(a.getHops(), equalTo("*0.."));
-        assertThat(a.getFilter(), equalTo("{x:\"foo\", y:\"bar\"}"));
-    }
-
-    @Test
-    public void relationshipAliasWithUpperBoundHopsAndAttributeFilter() {
-        RelationshipParameter a = RelationshipParameter.getRelationshipParameter("A*..3 {x:\"foo\", y:\"bar\"}");
-        assertThat(a.getAlias(), equalTo("A"));
-        assertThat(a.getHops(), equalTo("*..3"));
-        assertThat(a.getFilter(), equalTo("{x:\"foo\", y:\"bar\"}"));
-    }
-
-    @Test
-    public void relationshipAliasWithLowerAndUpperBoundHopsAndAttributeFilter() {
-        RelationshipParameter a = RelationshipParameter.getRelationshipParameter("A*0..3 {x:\"foo\", y:\"bar\"}");
-        assertThat(a.getAlias(), equalTo("A"));
-        assertThat(a.getHops(), equalTo("*0..3"));
-        assertThat(a.getFilter(), equalTo("{x:\"foo\", y:\"bar\"}"));
-    }
-
-    @Test
-    public void relationshipAliasWithLowerAndUpperBoundHops() {
-        RelationshipParameter a = RelationshipParameter.getRelationshipParameter("A *0..3");
-        assertThat(a.getAlias(), equalTo("A"));
-        assertThat(a.getHops(), equalTo("*0..3"));
-        assertThat(a.getFilter(), nullValue());
+    public void parse() {
+        RelationshipParameter relationshipParameter = RelationshipParameter.getRelationshipParameter(label);
+        if (label == null) {
+            assertThat(relationshipParameter, nullValue());
+        } else {
+            assertThat(relationshipParameter.getAlias(), equalTo(expectedAlias));
+            assertThat(relationshipParameter.getType(), equalTo(expectedType));
+            assertThat(relationshipParameter.getHops(), equalTo(expectedHops));
+            assertThat(relationshipParameter.getFilter(), equalTo(expectedFilter));
+        }
     }
 }

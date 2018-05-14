@@ -14,6 +14,8 @@ public class NodeParameter {
 
     public static final Pattern NODE_PATTERN = Pattern.compile("(?<alias>\\w+)?\\s?(?<filter>\\{.*})?");
 
+    public static final NodeParameter DEFAULT = NodeParameter.builder().build();
+
     private String alias;
 
     private String filter;
