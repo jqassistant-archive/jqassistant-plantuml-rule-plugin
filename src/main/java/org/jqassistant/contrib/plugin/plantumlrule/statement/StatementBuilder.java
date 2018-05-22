@@ -8,6 +8,9 @@ import org.jqassistant.contrib.plugin.plantumlrule.model.NodeParameter;
 import org.jqassistant.contrib.plugin.plantumlrule.model.Relationship;
 import org.jqassistant.contrib.plugin.plantumlrule.model.RelationshipParameter;
 
+/**
+ * A builder that creates a {@link Statement} from the given {@link Node}s and {@link Relationship}s.
+ */
 public class StatementBuilder {
 
     private Map<String, Node> nodes;
@@ -16,16 +19,19 @@ public class StatementBuilder {
     /**
      * Constructor.
      *
-     * @param nodes
-     *            The {@link Node}s.
-     * @param relationships
-     *            The {@link Relationship}s.
+     * @param nodes         The {@link Node}s.
+     * @param relationships The {@link Relationship}s.
      */
     public StatementBuilder(Map<String, Node> nodes, Map<String, Relationship> relationships) {
         this.nodes = nodes;
         this.relationships = relationships;
     }
 
+    /**
+     * Create the {@link Statement}.
+     *
+     * @return The {@link Statement}.
+     */
     public Statement create() {
         Segment matchSegment = new Segment();
         Segment mergeSegment = new Segment();
@@ -79,7 +85,7 @@ public class StatementBuilder {
                 matchSegment.commaNewLine();
                 matchSegment.indent();
                 addRelationship(relationship, alias, relationship.getMatchType(), relationshipParameter.getHops(), relationshipParameter.getFilter(),
-                        matchSegment);
+                    matchSegment);
             }
         }
     }
