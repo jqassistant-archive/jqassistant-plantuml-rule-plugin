@@ -33,8 +33,8 @@ public class Statement {
         statement.append("RETURN");
         statement.newLine();
         if (returnSegment.isEmpty()) {
-            returnSegment.indent();
-            returnSegment.append("count(*)");
+            statement.indent();
+            statement.append("count(*)");
         } else {
             statement.append(returnSegment.get());
         }
