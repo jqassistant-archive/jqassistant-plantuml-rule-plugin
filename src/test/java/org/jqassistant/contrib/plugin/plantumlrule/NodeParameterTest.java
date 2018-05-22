@@ -1,5 +1,6 @@
 package org.jqassistant.contrib.plugin.plantumlrule;
 
+import org.jqassistant.contrib.plugin.plantumlrule.model.NodeParameter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;

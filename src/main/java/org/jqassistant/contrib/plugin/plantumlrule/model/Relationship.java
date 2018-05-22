@@ -1,4 +1,4 @@
-package org.jqassistant.contrib.plugin.plantumlrule;
+package org.jqassistant.contrib.plugin.plantumlrule.model;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -7,7 +7,7 @@ import lombok.ToString;
 @Builder
 @Getter
 @ToString
-class Relationship {
+public class Relationship {
 
     private String id;
 

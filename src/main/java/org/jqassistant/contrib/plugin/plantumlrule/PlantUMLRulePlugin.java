@@ -5,7 +5,6 @@ import static java.util.Collections.singletonList;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -23,17 +22,13 @@ import net.sourceforge.plantuml.BlockUml;
 import net.sourceforge.plantuml.SourceStringReader;
 import net.sourceforge.plantuml.core.Diagram;
 import net.sourceforge.plantuml.cucadiagram.CucaDiagram;
-import net.sourceforge.plantuml.cucadiagram.Display;
-import net.sourceforge.plantuml.cucadiagram.ILeaf;
-import net.sourceforge.plantuml.cucadiagram.Link;
 import net.sourceforge.plantuml.png.MetadataTag;
 import org.asciidoctor.ast.AbstractBlock;
+import org.jqassistant.contrib.plugin.plantumlrule.statement.StatementBuilder;
 
 public class PlantUMLRulePlugin extends AbstractCypherLanguagePlugin {
 
     private static final Pattern PLANTUML_PATTERN = Pattern.compile("^\\s*(@startuml\\s+.*@enduml)\\s.*", Pattern.DOTALL);
-
-    private static final StatementBuilder STATEMENT_BUILDER = new StatementBuilder();
 
     @Override
     public Collection<String> getLanguages() {
@@ -62,7 +57,8 @@ public class PlantUMLRulePlugin extends AbstractCypherLanguagePlugin {
     private <T extends ExecutableRule<?>> Result<T> evaluate(CucaDiagram diagram, T executableRule, Map<String, Object> ruleParameters, Severity severity,
                                                              AnalyzerContext context) throws RuleException {
         CucaDiagramParser cucaDiagramParser = new CucaDiagramParser(diagram);
-        String statement = STATEMENT_BUILDER.create(cucaDiagramParser.getNodes(), cucaDiagramParser.getRelationships());
+        StatementBuilder statementBuilder = new StatementBuilder(cucaDiagramParser.getNodes(), cucaDiagramParser.getRelationships());
+        String statement = statementBuilder.create().get();
         context.getLogger().info("\n" + statement + "\n----");
         return execute(statement, executableRule, ruleParameters, severity, context);
     }

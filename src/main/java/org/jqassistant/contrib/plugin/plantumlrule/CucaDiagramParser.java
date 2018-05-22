@@ -1,6 +1,10 @@
 package org.jqassistant.contrib.plugin.plantumlrule;
 
 import net.sourceforge.plantuml.cucadiagram.*;
+import org.jqassistant.contrib.plugin.plantumlrule.model.Node;
+import org.jqassistant.contrib.plugin.plantumlrule.model.NodeParameter;
+import org.jqassistant.contrib.plugin.plantumlrule.model.Relationship;
+import org.jqassistant.contrib.plugin.plantumlrule.model.RelationshipParameter;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

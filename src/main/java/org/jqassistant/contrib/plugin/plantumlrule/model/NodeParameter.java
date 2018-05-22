@@ -1,10 +1,13 @@
-package org.jqassistant.contrib.plugin.plantumlrule;
+package org.jqassistant.contrib.plugin.plantumlrule.model;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import lombok.*;
 
+/**
+ * Represents the parameters that are present at a node of an entity diagram.
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter

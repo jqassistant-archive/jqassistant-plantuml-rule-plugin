@@ -1,16 +1,19 @@
-package org.jqassistant.contrib.plugin.plantumlrule;
+package org.jqassistant.contrib.plugin.plantumlrule.model;
+
+import java.util.Set;
 
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Singular;
 import lombok.ToString;
 
-import java.util.Set;
-
+/**
+ * Represents a node parsed from an entity diagram.
+ */
 @Builder
 @Getter
 @ToString
-class Node {
+public class Node {
 
     private String id;
 
