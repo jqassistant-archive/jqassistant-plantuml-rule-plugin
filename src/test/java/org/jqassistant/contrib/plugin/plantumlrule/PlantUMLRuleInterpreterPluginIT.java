@@ -6,7 +6,6 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -17,17 +16,17 @@ import com.buschmais.jqassistant.plugin.java.test.AbstractJavaPluginIT;
 
 import org.junit.Test;
 
-public class PlantUMLRulePluginIT extends AbstractJavaPluginIT {
+public class PlantUMLRuleInterpreterPluginIT extends AbstractJavaPluginIT {
 
     @Test
     public void asciidocComponentDiagram() throws IOException, RuleException {
-        scanClassPathDirectory(getClassesDirectory(PlantUMLRulePluginIT.class));
+        scanClassPathDirectory(getClassesDirectory(PlantUMLRuleInterpreterPluginIT.class));
         assertThat(applyConcept("plantuml-rule:ComponentDiagramAdoc").getStatus(), equalTo(SUCCESS));
     }
 
     @Test
     public void asciidocNestedPackageDiagram() throws IOException, RuleException {
-        scanClassPathDirectory(getClassesDirectory(PlantUMLRulePluginIT.class));
+        scanClassPathDirectory(getClassesDirectory(PlantUMLRuleInterpreterPluginIT.class));
         Result<Concept> result = applyConcept("plantuml-rule:NestedPackageDiagramAdoc");
         store.beginTransaction();
         assertThat(result.getStatus(), equalTo(SUCCESS));
@@ -39,7 +38,7 @@ public class PlantUMLRulePluginIT extends AbstractJavaPluginIT {
 
     @Test
     public void asciidocClassDiagram() throws IOException, RuleException {
-        scanClassPathDirectory(getClassesDirectory(PlantUMLRulePluginIT.class));
+        scanClassPathDirectory(getClassesDirectory(PlantUMLRuleInterpreterPluginIT.class));
         assertThat(applyConcept("plantuml-rule:ClassDiagramAdoc").getStatus(), equalTo(SUCCESS));
     }
 }

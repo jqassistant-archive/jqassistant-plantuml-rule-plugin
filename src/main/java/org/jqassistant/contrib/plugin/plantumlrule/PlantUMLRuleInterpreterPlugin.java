@@ -15,7 +15,7 @@ import com.buschmais.jqassistant.core.analysis.api.Result;
 import com.buschmais.jqassistant.core.analysis.api.rule.ExecutableRule;
 import com.buschmais.jqassistant.core.analysis.api.rule.RuleException;
 import com.buschmais.jqassistant.core.analysis.api.rule.Severity;
-import com.buschmais.jqassistant.core.analysis.impl.AbstractCypherLanguagePlugin;
+import com.buschmais.jqassistant.core.analysis.impl.AbstractCypherRuleInterpreterPlugin;
 import com.buschmais.jqassistant.core.shared.asciidoc.AsciidoctorFactory;
 
 import net.sourceforge.plantuml.BlockUml;
@@ -26,7 +26,7 @@ import net.sourceforge.plantuml.png.MetadataTag;
 import org.asciidoctor.ast.AbstractBlock;
 import org.jqassistant.contrib.plugin.plantumlrule.statement.StatementBuilder;
 
-public class PlantUMLRulePlugin extends AbstractCypherLanguagePlugin {
+public class PlantUMLRuleInterpreterPlugin extends AbstractCypherRuleInterpreterPlugin {
 
     private static final Pattern PLANTUML_PATTERN = Pattern.compile("^\\s*(@startuml\\s+.*@enduml)\\s.*", Pattern.DOTALL);
 
