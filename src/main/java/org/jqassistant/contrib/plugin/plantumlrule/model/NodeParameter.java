@@ -6,7 +6,8 @@ import java.util.regex.Pattern;
 import lombok.*;
 
 /**
- * Represents the parameters that are present at a node of an entity diagram.
+ * Represents the parameters that are present at a {@link Node} of an entity
+ * diagram.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -19,8 +20,14 @@ public class NodeParameter {
 
     public static final NodeParameter DEFAULT = NodeParameter.builder().build();
 
+    /**
+     * The alias for the {@link Node}.
+     */
     private String alias;
 
+    /**
+     * The filter for the {@link Node}, e.g. {name: "AbstractEntity"}.
+     */
     private String filter;
 
     public static NodeParameter getNodeParameter(CharSequence label) {

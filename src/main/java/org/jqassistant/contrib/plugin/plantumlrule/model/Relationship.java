@@ -4,6 +4,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 
+/**
+ * Represents a relationship parsed from an entity diagram.
+ */
 @Builder
 @Getter
 @ToString

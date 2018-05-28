@@ -6,7 +6,8 @@ import java.util.regex.Pattern;
 import lombok.*;
 
 /**
- * Represents the parameters that are present at a relationship of an entity diagram.
+ * Represents the parameters that are present at a relationship of an entity
+ * diagram.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -16,16 +17,29 @@ import lombok.*;
 public class RelationshipParameter {
 
     // EXTENDS*0..1{key1:1,key2:"test"}
-    public static final Pattern RELATIONSHIP_PATTERN = Pattern.compile("(?<alias>\\w+)?\\s?" + "(:(?<type>\\+?\\w+))?\\s?" + "(?<hops>\\*([0-9]?(..)?[0-9]?))" + "?\\s?(?<filter>\\{.*})?");
+    public static final Pattern RELATIONSHIP_PATTERN = Pattern
+            .compile("(?<alias>\\w+)?\\s?" + "(:(?<type>\\+?\\w+))?\\s?" + "(?<hops>\\*([0-9]?(..)?[0-9]?))" + "?\\s?(?<filter>\\{.*})?");
 
     public static final RelationshipParameter DEFAULT = RelationshipParameter.builder().build();
 
+    /**
+     * The alias for the relationship.
+     */
     private String alias;
 
+    /**
+     * The type of the relationship.
+     */
     private String type;
 
+    /**
+     * The hops pattern, e.g. "*0..3".
+     */
     private String hops;
 
+    /**
+     * The filter for the {@link Relationship}, e.g. {virtual: true}.
+     */
     private String filter;
 
     public static RelationshipParameter getRelationshipParameter(CharSequence label) {
@@ -36,7 +50,8 @@ public class RelationshipParameter {
         if (!matcher.matches()) {
             return null;
         }
-        return RelationshipParameter.builder().alias(matcher.group("alias")).type(matcher.group("type")).hops(matcher.group("hops")).filter(matcher.group("filter")).build();
+        return RelationshipParameter.builder().alias(matcher.group("alias")).type(matcher.group("type")).hops(matcher.group("hops"))
+                .filter(matcher.group("filter")).build();
     }
 
 }
