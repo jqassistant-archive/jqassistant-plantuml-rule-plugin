@@ -18,6 +18,8 @@ public class RelationshipParameterTest {
 
     private String label;
 
+    private String expectedModifier;
+
     private String expectedAlias;
 
     private String expectedType;
@@ -26,8 +28,9 @@ public class RelationshipParameterTest {
 
     private String expectedFilter;
 
-    public RelationshipParameterTest(String label, String expectedAlias, String expectedType, String expectedHops, String expectedFilter) {
+    public RelationshipParameterTest(String label, String expectedModifier, String expectedAlias, String expectedType, String expectedHops, String expectedFilter) {
         this.label = label;
+        this.expectedModifier = expectedModifier;
         this.expectedAlias = expectedAlias;
         this.expectedType = expectedType;
         this.expectedHops = expectedHops;
@@ -37,19 +40,19 @@ public class RelationshipParameterTest {
     @Parameters
     public static Collection<Object[]> data() {
         return asList(new Object[][]{
-            {null, null, null, null, null},
-            {"", null, null, null, null},
-            {"e", "e", null, null, null},
-            {":EXTENDS", null, "EXTENDS", null, null},
-            {":+EXTENDS", null, "+EXTENDS", null, null},
-            {"e:EXTENDS", "e", "EXTENDS", null, null},
-            {"e:EXTENDS*", "e", "EXTENDS", "*", null},
-            {"e:EXTENDS*0..", "e", "EXTENDS", "*0..", null},
-            {"e:EXTENDS*..1", "e", "EXTENDS", "*..1", null},
-            {"e:EXTENDS*..1{x:1}", "e", "EXTENDS", "*..1", "{x:1}"},
-            {"e:EXTENDS*..1{x:1,y:\"foo\"}", "e", "EXTENDS", "*..1", "{x:1,y:\"foo\"}"},
-            {"e :EXTENDS *..1 { x:1, y:\"foo\" }", "e", "EXTENDS", "*..1", "{ x:1, y:\"foo\" }"},
-            {"e :+EXTENDS *..1 { x:1, y:\"foo\" }", "e", "+EXTENDS", "*..1", "{ x:1, y:\"foo\" }"}
+            {null, null, null, null, null, null},
+            {"", null, null, null, null, null},
+            {"e", null,"e", null, null, null},
+            {":EXTENDS", null, null, "EXTENDS", null, null},
+            {"+:EXTENDS", "+", null, "EXTENDS", null, null},
+            {"e:EXTENDS", null, "e", "EXTENDS", null, null},
+            {"e:EXTENDS*", null, "e", "EXTENDS", "*", null},
+            {"e:EXTENDS*0..", null, "e", "EXTENDS", "*0..", null},
+            {"e:EXTENDS*..1", null, "e", "EXTENDS", "*..1", null},
+            {"e:EXTENDS*..1{x:1}", null, "e", "EXTENDS", "*..1", "{x:1}"},
+            {"e:EXTENDS*..1{x:1,y:\"foo\"}", null, "e", "EXTENDS", "*..1", "{x:1,y:\"foo\"}"},
+            {"e :EXTENDS *..1 { x:1, y:\"foo\" }", null, "e", "EXTENDS", "*..1", "{ x:1, y:\"foo\" }"},
+            {"+e : EXTENDS *..1 { x:1, y:\"foo\" }", "+", "e", "EXTENDS", "*..1", "{ x:1, y:\"foo\" }"}
         });
     }
 
@@ -59,6 +62,7 @@ public class RelationshipParameterTest {
         if (label == null) {
             assertThat(relationshipParameter, nullValue());
         } else {
+            assertThat(relationshipParameter.getModifier(), equalTo(expectedModifier));
             assertThat(relationshipParameter.getAlias(), equalTo(expectedAlias));
             assertThat(relationshipParameter.getType(), equalTo(expectedType));
             assertThat(relationshipParameter.getHops(), equalTo(expectedHops));

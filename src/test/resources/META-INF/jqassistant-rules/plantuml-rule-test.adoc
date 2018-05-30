@@ -24,8 +24,8 @@ root -up-> a : :CONTAINS
 root -up-> b : :CONTAINS
 root -up-> c : :CONTAINS
 
-b -> a : d1:+DEFINES_DEPENDENCY
-c -> a : d2:+DEFINES_DEPENDENCY
+b -> a : +d1:DEFINES_DEPENDENCY
+c -> a : +d2:DEFINES_DEPENDENCY
 
 @enduml
 ----
@@ -55,7 +55,7 @@ MERGE
 MERGE
   (c)-[d2:DEFINES_DEPENDENCY]->(a)
 RETURN
-root, a, b, c, d1, d2
+  root, a, b, c, d1, d2
 ----
 
 [[plantuml-rule:NestedPackageDiagramAdoc]]

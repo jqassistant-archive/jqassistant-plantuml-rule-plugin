@@ -23,8 +23,7 @@ public class CucaDiagramParser {
     /**
      * Constructor.
      *
-     * @param diagram
-     *            The {@link CucaDiagram} to parse.
+     * @param diagram The {@link CucaDiagram} to parse.
      */
     public CucaDiagramParser(CucaDiagram diagram) {
         this.nodes = unmodifiableMap(getNodes(diagram.getRootGroup()));
@@ -56,8 +55,7 @@ public class CucaDiagramParser {
      * Any nested groups are resolved recursively.
      * </p>
      *
-     * @param group
-     *            The {@link IGroup}.
+     * @param group The {@link IGroup}.
      * @return The contained {@link Node}s.
      */
     private Map<String, Node> getNodes(IGroup group) {
@@ -75,10 +73,8 @@ public class CucaDiagramParser {
     /**
      * Add a {@link Node} from the diagram..
      *
-     * @param entity
-     *            The {@link IEntity} representing the {@link Node}.
-     * @param nodes
-     *            The {@link Map} of {@link Node}s.
+     * @param entity The {@link IEntity} representing the {@link Node}.
+     * @param nodes  The {@link Map} of {@link Node}s.
      */
     private void addNode(IEntity entity, Map<String, Node> nodes) {
         Node.NodeBuilder nodeBuilder = Node.builder().id(entity.getUid());
@@ -98,10 +94,8 @@ public class CucaDiagramParser {
     /**
      * Get the {@link Relationship}s specified by the diagram.
      *
-     * @param diagram
-     *            The {@link CucaDiagram}.
-     * @param nodes
-     *            The {@link Node}s of the diagram.
+     * @param diagram The {@link CucaDiagram}.
+     * @param nodes   The {@link Node}s of the diagram.
      * @return The {@link Map} of {@link Relationship}s.
      */
     private Map<String, Relationship> getRelationships(CucaDiagram diagram, Map<String, Node> nodes) {
@@ -113,8 +107,8 @@ public class CucaDiagramParser {
             builder.relationshipParameter(relationshipParameter);
             String relationType = relationshipParameter.getType();
             if (relationType != null) {
-                if (relationType.startsWith("+")) {
-                    builder.mergeType(relationType.substring(1));
+                if ("+".equals(relationshipParameter.getModifier())) {
+                    builder.mergeType(relationType);
                 } else {
                     builder.matchType(relationType);
                 }
@@ -137,8 +131,7 @@ public class CucaDiagramParser {
     /**
      * Extract {@link NodeParameter} from the {@link Display}.
      *
-     * @param display
-     *            The {@link Display}.
+     * @param display The {@link Display}.
      * @return The {@link NodeParameter}.
      */
     private NodeParameter getNodeParameter(Display display) {
@@ -154,8 +147,7 @@ public class CucaDiagramParser {
     /**
      * Extract the {@link RelationshipParameter} from thi given {@link Display}.
      *
-     * @param display
-     *            The {@link Display}.
+     * @param display The {@link Display}.
      * @return The {@link RelationshipParameter}.
      */
     private RelationshipParameter getRelationshipParameter(Display display) {
