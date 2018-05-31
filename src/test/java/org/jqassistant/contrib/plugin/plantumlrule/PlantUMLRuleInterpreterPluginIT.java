@@ -35,7 +35,7 @@ public class PlantUMLRuleInterpreterPluginIT extends AbstractJavaPluginIT {
     @Test
     public void asciidocComponentDiagram() throws IOException, RuleException {
         scanClassPathDirectory(getClassesDirectory(PlantUMLRuleInterpreterPluginIT.class));
-        Result<Concept> conceptResult = applyConcept("plantuml-rule:ComponentDiagramAdoc");
+        Result<Concept> conceptResult = applyConcept("plantuml-rule:ComponentDiagram");
         assertThat(conceptResult.getStatus(), equalTo(SUCCESS));
         store.beginTransaction();
         List<Map<String, Object>> resultRows = conceptResult.getRows();
@@ -58,9 +58,23 @@ public class PlantUMLRuleInterpreterPluginIT extends AbstractJavaPluginIT {
     }
 
     @Test
+    public void asciidocComponentDiagramWithoutAliases() throws IOException, RuleException {
+        scanClassPathDirectory(getClassesDirectory(PlantUMLRuleInterpreterPluginIT.class));
+        Result<Concept> conceptResult = applyConcept("plantuml-rule:ComponentDiagramWithoutAliases");
+        assertThat(conceptResult.getStatus(), equalTo(SUCCESS));
+        store.beginTransaction();
+        List<Map<String, Object>> resultRows = conceptResult.getRows();
+        assertThat(resultRows.size(), equalTo(1));
+        Map<String, Object> resultRow = resultRows.get(0);
+        assertThat(resultRow.size(), equalTo(1));
+        assertThat(resultRow.get("Count"), equalTo(1l));
+        store.commitTransaction();
+    }
+
+    @Test
     public void asciidocNestedPackageDiagram() throws IOException, RuleException {
         scanClassPathDirectory(getClassesDirectory(PlantUMLRuleInterpreterPluginIT.class));
-        Result<Concept> result = applyConcept("plantuml-rule:NestedPackageDiagramAdoc");
+        Result<Concept> result = applyConcept("plantuml-rule:NestedPackageDiagram");
         store.beginTransaction();
         assertThat(result.getStatus(), equalTo(SUCCESS));
         assertThat(result.getColumnNames(), equalTo(asList("layer")));
@@ -72,6 +86,6 @@ public class PlantUMLRuleInterpreterPluginIT extends AbstractJavaPluginIT {
     @Test
     public void asciidocClassDiagram() throws IOException, RuleException {
         scanClassPathDirectory(getClassesDirectory(PlantUMLRuleInterpreterPluginIT.class));
-        assertThat(applyConcept("plantuml-rule:ClassDiagramAdoc").getStatus(), equalTo(SUCCESS));
+        assertThat(applyConcept("plantuml-rule:ClassDiagram").getStatus(), equalTo(SUCCESS));
     }
 }

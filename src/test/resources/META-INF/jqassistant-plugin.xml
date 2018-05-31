@@ -1,7 +1,6 @@
 <jqa-plugin:jqassistant-plugin xmlns:jqa-plugin="http://www.buschmais.com/jqassistant/core/plugin/schema/v1.4" name="PlantUML Rule Test">
-    <description>PlantUML rule Test</description>
+    <description>PlantUML Rule Test</description>
     <rules>
-        <resource>plantuml-rule-test.xml</resource>
-        <resource>plantuml-rule-test.adoc</resource>
+        <resource>plantuml-rules.adoc</resource>
     </rules>
 </jqa-plugin:jqassistant-plugin>

@@ -16,6 +16,8 @@ import lombok.ToString;
 @ToString
 public class Statement {
 
+    public static final String COUNT = "Count";
+
     private Segment matchSegment;
 
     private Segment mergeSegment;
@@ -34,7 +36,7 @@ public class Statement {
         statement.newLine();
         if (returnSegment.isEmpty()) {
             statement.indent();
-            statement.append("count(*)");
+            statement.append("count(*) as " + COUNT);
         } else {
             statement.append(returnSegment.get());
         }

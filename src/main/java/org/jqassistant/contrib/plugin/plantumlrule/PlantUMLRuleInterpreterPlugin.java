@@ -12,10 +12,13 @@ import java.util.regex.Pattern;
 
 import com.buschmais.jqassistant.core.analysis.api.AnalyzerContext;
 import com.buschmais.jqassistant.core.analysis.api.Result;
+import com.buschmais.jqassistant.core.analysis.api.RuleInterpreterPlugin;
 import com.buschmais.jqassistant.core.analysis.api.rule.ExecutableRule;
 import com.buschmais.jqassistant.core.analysis.api.rule.RuleException;
 import com.buschmais.jqassistant.core.analysis.api.rule.Severity;
 import com.buschmais.jqassistant.core.analysis.impl.AbstractCypherRuleInterpreterPlugin;
+import com.buschmais.jqassistant.core.rule.api.reader.AggregationVerification;
+import com.buschmais.jqassistant.core.rule.api.reader.RowCountVerification;
 import com.buschmais.jqassistant.core.shared.asciidoc.AsciidoctorFactory;
 
 import net.sourceforge.plantuml.BlockUml;
@@ -24,8 +27,13 @@ import net.sourceforge.plantuml.core.Diagram;
 import net.sourceforge.plantuml.cucadiagram.CucaDiagram;
 import net.sourceforge.plantuml.png.MetadataTag;
 import org.asciidoctor.ast.AbstractBlock;
+import org.jqassistant.contrib.plugin.plantumlrule.statement.Statement;
 import org.jqassistant.contrib.plugin.plantumlrule.statement.StatementBuilder;
 
+/**
+ * A {@link RuleInterpreterPlugin} that parses PlantUML diagrams and translates
+ * them into Cypher queries.
+ */
 public class PlantUMLRuleInterpreterPlugin extends AbstractCypherRuleInterpreterPlugin {
 
     private static final Pattern PLANTUML_PATTERN = Pattern.compile("^\\s*(@startuml\\s+.*@enduml)\\s.*", Pattern.DOTALL);
@@ -42,29 +50,80 @@ public class PlantUMLRuleInterpreterPlugin extends AbstractCypherRuleInterpreter
 
     @Override
     public <T extends ExecutableRule<?>> Result<T> execute(T executableRule, Map<String, Object> ruleParameters, Severity severity, AnalyzerContext context)
-        throws RuleException {
+            throws RuleException {
         String diagramSource = getDiagramSource(executableRule);
-        context.getLogger().info(executableRule + "\n----\n" + diagramSource + "\n----");
+        context.getLogger().info(executableRule.toString());
+        context.getLogger().info("----\n" + diagramSource + "\n----");
         SourceStringReader reader = new SourceStringReader(diagramSource);
         List<BlockUml> blocks = reader.getBlocks();
         Diagram diagram = blocks.get(0).getDiagram();
-        if (diagram instanceof CucaDiagram) {
-            return evaluate((CucaDiagram) diagram, executableRule, ruleParameters, severity, context);
-        }
-        throw new RuleException("Rule type " + diagram.getClass().getName() + " is not supported.");
+        Statement statement = getStatement(diagram);
+        String cypher = statement.get();
+        context.getLogger().info("----\n" + cypher + "\n----");
+        // TODO AbstractCypherRuleInterpreterPlugin should allow passing the
+        // Verification as parameter instead of providing protected #getStatus.
+        return execute(cypher, executableRule, ruleParameters, severity, context);
     }
 
-    private <T extends ExecutableRule<?>> Result<T> evaluate(CucaDiagram diagram, T executableRule, Map<String, Object> ruleParameters, Severity severity,
-                                                             AnalyzerContext context) throws RuleException {
+    /**
+     * Evaluate the given diagram and create the corresponding cypher statement for
+     * it.
+     *
+     * @param <T>
+     *            The {@link ExecutableRule} type.
+     * @param diagram
+     *            The {@link Diagram}.
+     * @return The {@link Statement}.
+     * @throws RuleException
+     *             If the diagram cannot be evaluated.
+     */
+    private <T extends ExecutableRule<?>> Statement getStatement(Diagram diagram) throws RuleException {
+        if (diagram instanceof CucaDiagram) {
+            return evaluate((CucaDiagram) diagram);
+        }
+        throw new RuleException("The diagram type " + diagram.getClass().getName() + " is not supported.");
+    }
+
+    /**
+     * Evaluate a {@link CucaDiagram}.
+     *
+     * @param <T>
+     *            The {@link ExecutableRule} type.
+     * @param diagram
+     *            The {@link CucaDiagram}.
+     * @return The {@link Result}.
+     */
+    private <T extends ExecutableRule<?>> Statement evaluate(CucaDiagram diagram) {
         CucaDiagramParser cucaDiagramParser = new CucaDiagramParser(diagram);
         StatementBuilder statementBuilder = new StatementBuilder(cucaDiagramParser.getNodes(), cucaDiagramParser.getRelationships());
-        String statement = statementBuilder.create().get();
-        context.getLogger().info("\n" + statement + "\n----");
-        return execute(statement, executableRule, ruleParameters, severity, context);
+        return statementBuilder.create();
     }
 
+    @Override
+    protected <T extends ExecutableRule<?>> Result.Status getStatus(T executableRule, List<String> columnNames, List<Map<String, Object>> rows,
+            AnalyzerContext context) throws RuleException {
+        if (columnNames.size() == 1 && columnNames.get(0).equals(Statement.COUNT)) {
+            return context.verify(executableRule, columnNames, rows, AggregationVerification.builder().build());
+        } else {
+            return context.verify(executableRule, columnNames, rows, RowCountVerification.builder().build());
+        }
+    }
+
+    /**
+     * Extract the source code of the diagram from the given {@link ExecutableRule}.
+     *
+     * @param executableRule
+     *            The {@link ExecutableRule}.
+     * @param <T>
+     *            The {@link ExecutableRule} type.
+     * @return The extracted source code.
+     * @throws RuleException
+     *             If extraction fails.
+     */
     private <T extends ExecutableRule<?>> String getDiagramSource(T executableRule) throws RuleException {
         AbstractBlock abstractBlock = (AbstractBlock) executableRule.getExecutable().getSource();
+        // Asciidoctor delivers the rendered image which contains the diagram source
+        // code as metadata.
         File imagesDirectory = getImagesDirectory(abstractBlock);
         String fileName = (String) abstractBlock.getAttr("target");
         File diagramFile = new File(imagesDirectory, fileName);
@@ -77,11 +136,13 @@ public class PlantUMLRuleInterpreterPlugin extends AbstractCypherRuleInterpreter
         } catch (IOException e) {
             throw new RuleException("Cannot extract metadata from diagram.", e);
         }
+        // The metadata contains more information than necessary, so using a regex to
+        // extract the relevant part between @startuml and @enduml
         Matcher matcher = PLANTUML_PATTERN.matcher(diagramMetadata);
-        if (matcher.matches()) {
-            return matcher.group(1);
+        if (!matcher.matches()) {
+            throw new RuleException("Cannot find a PlantUML diagram, expecting '@startuml ... @enduml' but got '" + diagramMetadata + "'.");
         }
-        throw new RuleException("Cannot read diagram source from metadata, expecting '@startuml ... @enduml', got '" + diagramMetadata + "'.");
+        return matcher.group(1);
     }
 
     private File getImagesDirectory(AbstractBlock abstractBlock) {

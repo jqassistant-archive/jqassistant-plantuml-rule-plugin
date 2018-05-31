@@ -3,7 +3,7 @@ package org.jqassistant.contrib.plugin.plantumlrule.statement;
 /**
  * Represents a segment of a {@link Statement}.
  */
-class Segment {
+public class Segment {
 
     private StringBuilder builder = new StringBuilder();
 
