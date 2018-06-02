@@ -3,11 +3,13 @@ package org.jqassistant.contrib.plugin.plantumlrule;
 import static com.buschmais.jqassistant.core.analysis.api.Result.Status.SUCCESS;
 import static com.buschmais.jqassistant.plugin.java.test.matcher.PackageDescriptorMatcher.packageDescriptor;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.core.IsCollectionContaining.hasItems;
 import static org.junit.Assert.assertThat;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +17,10 @@ import java.util.Map;
 import com.buschmais.jqassistant.core.analysis.api.Result;
 import com.buschmais.jqassistant.core.analysis.api.rule.Concept;
 import com.buschmais.jqassistant.core.analysis.api.rule.RuleException;
+import com.buschmais.jqassistant.core.rule.api.reader.RuleConfiguration;
+import com.buschmais.jqassistant.core.rule.api.source.FileRuleSource;
+import com.buschmais.jqassistant.core.rule.impl.reader.AsciidocRuleParserPlugin;
+import com.buschmais.jqassistant.core.rule.impl.reader.RuleParser;
 import com.buschmais.jqassistant.plugin.java.api.model.PackageDescriptor;
 import com.buschmais.jqassistant.plugin.java.test.AbstractJavaPluginIT;
 import com.buschmais.xo.api.CompositeObject;
@@ -23,6 +29,7 @@ import org.jqassistant.contrib.plugin.plantumlrule.set.root.Root;
 import org.jqassistant.contrib.plugin.plantumlrule.set.root.a.A;
 import org.jqassistant.contrib.plugin.plantumlrule.set.root.b.B;
 import org.jqassistant.contrib.plugin.plantumlrule.set.root.c.C;
+import org.junit.Before;
 import org.junit.Test;
 
 public class PlantUMLRuleInterpreterPluginIT extends AbstractJavaPluginIT {
@@ -31,6 +38,15 @@ public class PlantUMLRuleInterpreterPluginIT extends AbstractJavaPluginIT {
     public static final Package MODULE_A = A.class.getPackage();
     public static final Package MODULE_B = B.class.getPackage();
     public static final Package MODULE_C = C.class.getPackage();
+
+    @Before
+    public void initRules() throws RuleException {
+        AsciidocRuleParserPlugin asciidocRuleParserPlugin = new AsciidocRuleParserPlugin();
+        asciidocRuleParserPlugin.initialize();
+        asciidocRuleParserPlugin.configure(RuleConfiguration.DEFAULT);
+        RuleParser ruleParser = new RuleParser(singletonList(asciidocRuleParserPlugin));
+        ruleSet = ruleParser.parse(singletonList(new FileRuleSource(new File("README.adoc"))));
+    }
 
     @Test
     public void asciidocComponentDiagram() throws IOException, RuleException {
