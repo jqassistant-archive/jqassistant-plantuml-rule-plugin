@@ -34,7 +34,7 @@ image::layer.png[]
 
 === Maven
 
-Just add the plugin as dependency to the jQAssistant Maven plugin:
+Add the plugin as dependency to the jQAssistant Maven plugin:
 
 .pom.xml
 [source,xml]
@@ -64,13 +64,13 @@ Just add the plugin as dependency to the jQAssistant Maven plugin:
         <dependency>
             <groupId>org.jqassistant.contrib.plugin</groupId>
             <artifactId>jqassistant-plantuml-rule-plugin</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>1.0.0</version>
         </dependency>
         <!-- Asciidoc report plugin -->
         <dependency>
             <groupId>org.jqassistant.contrib.plugin</groupId>
             <artifactId>jqassistant-asciidoc-report-plugin</artifactId>
-            <version>1.1.0-SNAPSHOT</version>
+            <version>1.1.0</version>
         </dependency>
     </dependencies>
 </plugin>
@@ -78,11 +78,9 @@ Just add the plugin as dependency to the jQAssistant Maven plugin:
 
 == Diagrams As Rules
 
-=== Overview
+=== Introduction
 
-PlantUML supports a several types diagrams that are based on entities and relationships, e.g.
-component diagrams and class diagrams.
-
+PlantUML supports a several types diagrams that are based on entities and relationships, e.g. component diagrams and class diagrams.
 The elements of such diagrams are interpreted as graph patterns and translated into Cypher queries.
 
 Using the graph patterns it is possible to...
@@ -95,7 +93,7 @@ Using the graph patterns it is possible to...
 
 - Diagram nodes and groups are interpreted as nodes
 - Stereotypes are used as labels, e.g. `\<<Type>>`
-- A stereotype may start with a modifier `+` indicating that a label shall be added, e.g. `\<<+Entity>>`
+- A stereotype may start with a modifier `+` indicating that a label shall be added, e.g. `<<+Entity>>`
 - The description of a node may contain an alias and a filter, e.g. `a {name: 'a'}`, both are optional
 - If an alias is specified then it will be returned by the query
 
@@ -112,7 +110,7 @@ Using the graph patterns it is possible to...
 - The description of a relationship may contain a modifier, an alias, a type and a filter, e.g. `d:DEPENDS_ON{virtual:true}` or `+d1:DEFINES_DEPENDENCY`
 - If the modifier `+` is provided a new relation of the given type is created, otherwise the relation is used for filtering
 
-.Example
+.Relationship example 1
 ----
 [type1] as t1 <<Class>>
 [type2] as t2 <<Class>>
@@ -133,6 +131,25 @@ b -right-> a : +d1:DEFINES_DEPENDENCY
 - Return the created relationships as `d1`
 
 === Examples
+
+==== PlantUML Rules In Asciidoc Files
+
+To use PlantUML rules in Asciidoc files a `plantuml` source block must be used as supported by https://asciidoctor.org/docs/asciidoctor-diagram/#creating-a-diagram[Asciidoctor Diagram].
+Furthermore an id and role attribute are required, other jQAssistant attributes like `requiresConcepts` or `reportType` may be used if needed:
+
+....
+[[example:RootPackage]]
+[plantuml,root-package,role=concept]
+.The package named `root` is labeled with `Root`.
+----
+@startuml
+skinparam componentStyle uml2
+
+[root {name:"root"}] as r <<Package>> <<+Root>>
+
+@enduml
+----
+....
 
 ==== Component Diagram
 
@@ -170,10 +187,11 @@ The rule above...
 
 - Matches for a package named `root` and adds a label `Root` to it
 - Matches contained packages named `a`, `b`, `c` and adds a label `Module` to them
-- Creates relationships of type `DEFINES_DEPENDENCY` between `b` and `a` as well as between `c` and `a`
-- Returns the nodes with the aliases `root`, `a`, `b`, `c` as well as the created relationships `d1` and `d2`. The aliases are defined in the description of a node or relationship.
+- Creates relationships `b -> a` and `c -> a` of type `DEFINES_DEPENDENCY`
+- Returns the nodes with the aliases `root`, `a`, `b`, `c` as well as the created relationships `d1` and `d2`.
+  The aliases are defined in the description of the nodes or relationships.
 
-The example will be translated into a cypher query like this:
+The example is translated into a Cypher query like this:
 
 [source,cypher]
 ----
