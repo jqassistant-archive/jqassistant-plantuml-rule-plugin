@@ -102,7 +102,8 @@ public class PlantUMLRuleInterpreterPlugin extends AbstractCypherRuleInterpreter
     @Override
     protected <T extends ExecutableRule<?>> Result.Status getStatus(T executableRule, List<String> columnNames, List<Map<String, Object>> rows,
             AnalyzerContext context) throws RuleException {
-        if (columnNames.size() == 1 && columnNames.get(0).equals(Statement.COUNT)) {
+        // TODO should evaluate Statement.isAggregation
+        if (columnNames != null && columnNames.size() == 1 && columnNames.get(0).equals(Statement.COUNT)) {
             return context.verify(executableRule, columnNames, rows, AggregationVerification.builder().build());
         } else {
             return context.verify(executableRule, columnNames, rows, RowCountVerification.builder().build());

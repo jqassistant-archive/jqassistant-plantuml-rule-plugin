@@ -18,10 +18,13 @@ public class RelationshipParameter {
 
     // EXTENDS*0..1{key1:1,key2:"test"}
     public static final Pattern RELATIONSHIP_PATTERN = Pattern
-        .compile("(?<modifier>\\+)?\\s?" + "(?<alias>\\w+)?\\s?" + "(:\\s?(?<type>\\w+))?\\s?" + "(?<hops>\\*([0-9]?(..)?[0-9]?))" + "?\\s?(?<filter>\\{.*})?");
+        .compile("(\\((?<modifier>\\+)\\))?\\s?" + "(?<alias>\\w+)?\\s?" + "(:\\s?(?<type>\\w+))?\\s?" + "(?<hops>\\*([0-9]?(..)?[0-9]?))?" + "\\s?(?<filter>\\{.*})?");
 
     public static final RelationshipParameter DEFAULT = RelationshipParameter.builder().build();
 
+    /**
+     * The modifier, currently only + is supported.
+     */
     private String modifier;
 
     /**

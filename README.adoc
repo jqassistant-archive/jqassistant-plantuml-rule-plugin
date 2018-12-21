@@ -85,7 +85,7 @@ The elements of such diagrams are interpreted as graph patterns and translated i
 
 Using the graph patterns it is possible to...
 
-- match nodes and relationships by labels or type, filtering by properties is also supported
+- match nodes and relationships by labels or type, filtering by properties is supported as well
 - add labels to nodes
 - create relationships between nodes
 
@@ -93,7 +93,7 @@ Using the graph patterns it is possible to...
 
 - Diagram nodes and groups are interpreted as nodes
 - Stereotypes are used as labels, e.g. `\<<Type>>`
-- A stereotype may start with a modifier `+` indicating that a label shall be added, e.g. `<<+Entity>>`
+- A stereotype may start with a modifier `(+)` indicating that a label shall be added, e.g. `<<+Entity>>`
 - The description of a node may contain an alias and a filter, e.g. `a {name: 'a'}`, both are optional
 - If an alias is specified then it will be returned by the query
 
@@ -108,7 +108,7 @@ Using the graph patterns it is possible to...
 === Relationships
 
 - The description of a relationship may contain a modifier, an alias, a type and a filter, e.g. `d:DEPENDS_ON{virtual:true}` or `+d1:DEFINES_DEPENDENCY`
-- If the modifier `+` is provided a new relation of the given type is created, otherwise the relation is used for filtering
+- If the modifier `(+)` is provided a new relation of the given type is created, otherwise the relation is used for filtering
 
 .Relationship example 1
 ----
@@ -177,8 +177,8 @@ r -down-> a : :CONTAINS
 r -down-> b : :CONTAINS
 r -down-> c : :CONTAINS
 
-b -right-> a : +d1:DEFINES_DEPENDENCY
-c -left->  a : +d2:DEFINES_DEPENDENCY
+b -right-> a : (+) d1:DEFINES_DEPENDENCY
+c -left->  a : (+) d2:DEFINES_DEPENDENCY
 
 @enduml
 ----
@@ -240,13 +240,13 @@ r -down-> a : :CONTAINS
 r -down-> b : :CONTAINS
 r -down-> c : :CONTAINS
 
-b -right-> a : +:DEFINES_DEPENDENCY
-c -left->  a : +:DEFINES_DEPENDENCY
+b -right-> a : (+) :DEFINES_DEPENDENCY
+c -left->  a : (+) :DEFINES_DEPENDENCY
 
 @enduml
 ----
 
-In this case the generated Cypher query will only return the count of results:
+In this case the generated Cypher query will only return the count of result rows (i.e. matching patterns):
 
 [source,cypher]
 ----

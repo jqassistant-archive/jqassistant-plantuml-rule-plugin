@@ -34,13 +34,17 @@ public class Statement {
         statement.newLine();
         statement.append("RETURN");
         statement.newLine();
-        if (returnSegment.isEmpty()) {
+        if (isAggregation()) {
             statement.indent();
             statement.append("count(*) as " + COUNT);
         } else {
             statement.append(returnSegment.get());
         }
         return statement.get();
+    }
+
+    public boolean isAggregation() {
+        return returnSegment.isEmpty();
     }
 
 }

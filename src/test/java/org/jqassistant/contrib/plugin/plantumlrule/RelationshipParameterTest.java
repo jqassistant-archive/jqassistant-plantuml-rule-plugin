@@ -44,7 +44,7 @@ public class RelationshipParameterTest {
             {"", null, null, null, null, null},
             {"e", null,"e", null, null, null},
             {":EXTENDS", null, null, "EXTENDS", null, null},
-            {"+:EXTENDS", "+", null, "EXTENDS", null, null},
+            {"(+):EXTENDS", "+", null, "EXTENDS", null, null},
             {"e:EXTENDS", null, "e", "EXTENDS", null, null},
             {"e:EXTENDS*", null, "e", "EXTENDS", "*", null},
             {"e:EXTENDS*0..", null, "e", "EXTENDS", "*0..", null},
@@ -52,7 +52,7 @@ public class RelationshipParameterTest {
             {"e:EXTENDS*..1{x:1}", null, "e", "EXTENDS", "*..1", "{x:1}"},
             {"e:EXTENDS*..1{x:1,y:\"foo\"}", null, "e", "EXTENDS", "*..1", "{x:1,y:\"foo\"}"},
             {"e :EXTENDS *..1 { x:1, y:\"foo\" }", null, "e", "EXTENDS", "*..1", "{ x:1, y:\"foo\" }"},
-            {"+e : EXTENDS *..1 { x:1, y:\"foo\" }", "+", "e", "EXTENDS", "*..1", "{ x:1, y:\"foo\" }"}
+            {"(+) e : EXTENDS *..1 { x:1, y:\"foo\" }", "+", "e", "EXTENDS", "*..1", "{ x:1, y:\"foo\" }"}
         });
     }
 
