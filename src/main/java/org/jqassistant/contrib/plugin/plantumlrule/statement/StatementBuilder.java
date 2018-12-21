@@ -1,12 +1,13 @@
 package org.jqassistant.contrib.plugin.plantumlrule.statement;
 
-import java.util.Map;
-import java.util.Set;
-
 import org.jqassistant.contrib.plugin.plantumlrule.model.Node;
-import org.jqassistant.contrib.plugin.plantumlrule.model.NodeParameter;
+import org.jqassistant.contrib.plugin.plantumlrule.model.NodeLabel;
 import org.jqassistant.contrib.plugin.plantumlrule.model.Relationship;
-import org.jqassistant.contrib.plugin.plantumlrule.model.RelationshipParameter;
+import org.jqassistant.contrib.plugin.plantumlrule.model.RelationshipLabel;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * A builder that creates a {@link Statement} from the given {@link Node}s and {@link Relationship}s.
@@ -43,9 +44,10 @@ public class StatementBuilder {
 
     private void addNodes(Map<String, Node> nodes, Segment matchSegment, Segment mergeSegment, Segment returnSegment) {
         for (Node node : nodes.values()) {
-            NodeParameter nodeParameter = node.getNodeParameter();
+            List<String> matchLabels = node.getStereotypes().stream().filter(stereotype -> stereotype.getModifier() == null).map(stereotype -> stereotype.getLabel()).collect(Collectors.toList());
+            List<String> mergeLabels = node.getStereotypes().stream().filter(stereotype -> "+".equals(stereotype.getModifier())).map(stereotype -> stereotype.getLabel()).collect(Collectors.toList());
+            NodeLabel nodeLabel = node.getNodeLabel();
             String alias = getAlias(node, returnSegment);
-            Set<String> matchLabels = node.getMatchLabels();
             matchSegment.commaNewLine();
             matchSegment.indent();
             matchSegment.append("(");
@@ -53,12 +55,11 @@ public class StatementBuilder {
             if (!matchLabels.isEmpty()) {
                 addNodeLabels(matchSegment, matchLabels);
             }
-            String filter = nodeParameter.getFilter();
+            String filter = nodeLabel.getFilter();
             if (filter != null) {
                 matchSegment.append(filter);
             }
             matchSegment.append(")");
-            Set<String> mergeLabels = node.getMergeLabels();
             if (!mergeLabels.isEmpty()) {
                 mergeSegment.newLine();
                 mergeSegment.append("SET");
@@ -72,26 +73,27 @@ public class StatementBuilder {
 
     private void addRelationships(Map<String, Relationship> relationships, Segment matchSegment, Segment mergeSegment, Segment returnSegment) {
         for (Relationship relationship : relationships.values()) {
-            RelationshipParameter relationshipParameter = relationship.getRelationshipParameter();
-            String alias = relationshipParameter.getAlias();
+            RelationshipLabel relationshipLabel = relationship.getRelationshipLabel();
+            String alias = relationshipLabel.getAlias();
             addAlias(returnSegment, alias);
-            if (relationship.getMergeType() != null) {
+            String type = relationshipLabel.getType();
+            if ("+".equals(relationshipLabel.getModifier())) {
                 mergeSegment.newLine();
                 mergeSegment.append("MERGE");
                 mergeSegment.newLine();
                 mergeSegment.indent();
-                addRelationship(relationship, alias, relationship.getMergeType(), null, null, mergeSegment);
+                addRelationship(alias, type, null, null, mergeSegment, relationship.getFrom(), relationship.getTo());
             } else {
                 matchSegment.commaNewLine();
                 matchSegment.indent();
-                addRelationship(relationship, alias, relationship.getMatchType(), relationshipParameter.getHops(), relationshipParameter.getFilter(),
-                    matchSegment);
+                addRelationship(alias, type, relationshipLabel.getHops(), relationshipLabel.getFilter(),
+                    matchSegment, relationship.getFrom(), relationship.getTo());
             }
         }
     }
 
     private String getAlias(Node node, Segment returnSegment) {
-        String alias = node.getNodeParameter().getAlias();
+        String alias = node.getNodeLabel().getAlias();
         addAlias(returnSegment, alias);
         return alias != null ? alias : node.getId();
     }
@@ -107,8 +109,8 @@ public class StatementBuilder {
         }
     }
 
-    private void addRelationship(Relationship relationship, String alias, String type, String hops, String filter, Segment segment) {
-        addRelationshipNode(relationship.getFrom(), segment);
+    private void addRelationship(String alias, String type, String hops, String filter, Segment segment, Node from, Node to) {
+        addRelationshipNode(from, segment);
         segment.append("-[");
         if (alias != null) {
             segment.append(alias);
@@ -123,12 +125,12 @@ public class StatementBuilder {
             segment.append(filter);
         }
         segment.append("]->");
-        addRelationshipNode(relationship.getTo(), segment);
+        addRelationshipNode(to, segment);
     }
 
     private void addRelationshipNode(Node node, Segment segment) {
         segment.append('(');
-        String toAlias = node.getNodeParameter().getAlias();
+        String toAlias = node.getNodeLabel().getAlias();
         if (toAlias != null) {
             segment.append(toAlias);
         } else {
@@ -137,7 +139,7 @@ public class StatementBuilder {
         segment.append(')');
     }
 
-    private void addNodeLabels(Segment segment, Set<String> labels) {
+    private void addNodeLabels(Segment segment, List<String> labels) {
         for (String label : labels) {
             segment.append(':').append(label);
         }

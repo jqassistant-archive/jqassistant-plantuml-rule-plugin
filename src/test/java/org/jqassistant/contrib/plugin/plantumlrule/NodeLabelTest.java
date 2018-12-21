@@ -1,6 +1,6 @@
 package org.jqassistant.contrib.plugin.plantumlrule;
 
-import org.jqassistant.contrib.plugin.plantumlrule.model.NodeParameter;
+import org.jqassistant.contrib.plugin.plantumlrule.model.NodeLabel;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -14,16 +14,16 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Parameterized.class)
-public class NodeParameterTest {
+public class NodeLabelTest {
 
-    private String label;
+    private String value;
 
     private String expectedAlias;
 
     private String expectedFilter;
 
-    public NodeParameterTest(String label, String expectedAlias, String expectedFilter) {
-        this.label = label;
+    public NodeLabelTest(String value, String expectedAlias, String expectedFilter) {
+        this.value = value;
         this.expectedAlias = expectedAlias;
         this.expectedFilter = expectedFilter;
     }
@@ -42,12 +42,12 @@ public class NodeParameterTest {
 
     @Test
     public void parse() {
-        NodeParameter nodeParameter = NodeParameter.getNodeParameter(label);
-        if (label == null) {
-            assertThat(nodeParameter, nullValue());
+        NodeLabel nodeLabel = NodeLabel.of(value);
+        if (value == null) {
+            assertThat(nodeLabel, nullValue());
         } else {
-            assertThat(nodeParameter.getAlias(), equalTo(expectedAlias));
-            assertThat(nodeParameter.getFilter(), equalTo(expectedFilter));
+            assertThat(nodeLabel.getAlias(), equalTo(expectedAlias));
+            assertThat(nodeLabel.getFilter(), equalTo(expectedFilter));
         }
     }
 }

@@ -12,7 +12,7 @@ A component diagram with the source...
 ----
 @startuml
 [{name:"application"}] as root  <<Package>>
-[{layer}]              as layer <<Package>><<+Layer>>
+[{layer}]              as layer <<Package>><<(+) Layer>>
 
 root -right-> layer : :CONTAINS
 @enduml
@@ -93,13 +93,13 @@ Using the graph patterns it is possible to...
 
 - Diagram nodes and groups are interpreted as nodes
 - Stereotypes are used as labels, e.g. `\<<Type>>`
-- A stereotype may start with a modifier `(+)` indicating that a label shall be added, e.g. `<<+Entity>>`
+- A stereotype may start with a modifier `(+)` indicating that a label shall be added, e.g. `<<(+) Entity>>`
 - The description of a node may contain an alias and a filter, e.g. `a {name: 'a'}`, both are optional
 - If an alias is specified then it will be returned by the query
 
 .Example
 ----
-[root {name:"application"}] as r <<Package>> <<+Root>>
+[root {name:"application"}] as r <<Package>> <<(+) Root>>
 ----
 - Filter for nodes labeled with `Package` and a property `name` with the value `application`
 - Add a label `Root` to matching nodes
@@ -125,7 +125,7 @@ t1 --> t3 : d:DEPENDS_ON{virtual:true}
 
 .Example
 ----
-b -right-> a : +d1:DEFINES_DEPENDENCY
+b -right-> a : (+) d1:DEFINES_DEPENDENCY
 ----
 - Add a relationship of type `DEFINES_DEPENDENCY` between nodes `b` and `a`
 - Return the created relationships as `d1`
@@ -145,7 +145,7 @@ Furthermore an id and role attribute are required, other jQAssistant attributes 
 @startuml
 skinparam componentStyle uml2
 
-[root {name:"root"}] as r <<Package>> <<+Root>>
+[root {name:"root"}] as r <<Package>> <<(+) Root>>
 
 @enduml
 ----
@@ -167,11 +167,11 @@ The following component diagram demonstrates...
 @startuml
 skinparam componentStyle uml2
 
-[root {name:"root"}] as r <<Package>> <<+Root>>
+[root {name:"root"}] as r <<Package>> <<(+) Root>>
 
-[a {name:"a"}] as a <<Package>> <<+Module>>
-[b {name:"b"}] as b <<Package>> <<+Module>>
-[c {name:"c"}] as c <<Package>> <<+Module>>
+[a {name:"a"}] as a <<Package>> <<(+) Module>>
+[b {name:"b"}] as b <<Package>> <<(+) Module>>
+[c {name:"c"}] as c <<Package>> <<(+) Module>>
 
 r -down-> a : :CONTAINS
 r -down-> b : :CONTAINS
@@ -230,11 +230,11 @@ The same diagram may be specified without aliases in the descriptions of nodes a
 @startuml
 skinparam componentStyle uml2
 
-[{name:"root"}] as r <<Package>> <<+Root>>
+[{name:"root"}] as r <<Package>> <<(+) Root>>
 
-[{name:"a"}] as a <<Package>> <<+Module>>
-[{name:"b"}] as b <<Package>> <<+Module>>
-[{name:"c"}] as c <<Package>> <<+Module>>
+[{name:"a"}] as a <<Package>> <<(+) Module>>
+[{name:"b"}] as b <<Package>> <<(+) Module>>
+[{name:"c"}] as c <<Package>> <<(+) Module>>
 
 r -down-> a : :CONTAINS
 r -down-> b : :CONTAINS
@@ -287,8 +287,8 @@ It is possible to use folders which are interpreted as nodes:
 @startuml
 skinparam componentStyle uml2
 
-package "{name:'root'}" as root <<Package>> <<+Root>> {
-  package "layer" as layer <<Package>> <<+Layer>>
+package "{name:'root'}" as root <<Package>> <<(+) Root>> {
+  package "layer" as layer <<Package>> <<(+) Layer>>
 }
 
 root -> layer : :CONTAINS
@@ -325,7 +325,7 @@ The described rules for component diagrams apply for class diagrams as well:
 skinparam componentStyle uml2
 
 class "{name:"AbstractEntity"}" as abstractEntity <<Type>>
-class "entity" as entity <<Class>> <<+Entity>>
+class "entity" as entity <<Class>> <<(+) Entity>>
 
 entity -up-|> abstractEntity  : :EXTENDS*
 

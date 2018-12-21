@@ -14,11 +14,11 @@ import lombok.*;
 @Getter
 @Builder
 @ToString
-public class NodeParameter {
+public class NodeLabel {
 
-    public static final Pattern NODE_PATTERN = Pattern.compile("(?<alias>\\w+)?\\s?(?<filter>\\{.*})?");
+    public static final Pattern NODE_LABEL_PATTERN = Pattern.compile("(?<alias>\\w+)?\\s?(?<filter>\\{.*})?");
 
-    public static final NodeParameter DEFAULT = NodeParameter.builder().build();
+    public static final NodeLabel DEFAULT = NodeLabel.builder().build();
 
     /**
      * The alias for the {@link Node}.
@@ -30,15 +30,15 @@ public class NodeParameter {
      */
     private String filter;
 
-    public static NodeParameter getNodeParameter(CharSequence label) {
-        if (label == null) {
+    public static NodeLabel of(CharSequence value) {
+        if (value == null) {
             return null;
         }
-        Matcher matcher = NODE_PATTERN.matcher(label);
+        Matcher matcher = NODE_LABEL_PATTERN.matcher(value);
         if (!matcher.matches()) {
             return null;
         }
-        return NodeParameter.builder().alias(matcher.group("alias")).filter(matcher.group("filter")).build();
+        return NodeLabel.builder().alias(matcher.group("alias")).filter(matcher.group("filter")).build();
     }
 
 }

@@ -1,5 +1,6 @@
 package org.jqassistant.contrib.plugin.plantumlrule.model;
 
+import java.util.List;
 import java.util.Set;
 
 import lombok.Builder;
@@ -17,11 +18,9 @@ public class Node {
 
     private String id;
 
-    private NodeParameter nodeParameter;
+    private NodeLabel nodeLabel;
 
     @Singular
-    private Set<String> matchLabels;
+    private List<NodeStereotype> stereotypes;
 
-    @Singular
-    private Set<String> mergeLabels;
 }

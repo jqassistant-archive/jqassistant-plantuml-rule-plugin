@@ -18,10 +18,10 @@ public class Relationship {
 
     private Node to;
 
-    private RelationshipParameter relationshipParameter;
+    private RelationshipLabel relationshipLabel;
 
-    private String matchType;
+//    private String matchType;
 
-    private String mergeType;
+//    private String mergeType;
 
 }

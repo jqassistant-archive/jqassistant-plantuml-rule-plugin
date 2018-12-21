@@ -5,7 +5,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-import org.jqassistant.contrib.plugin.plantumlrule.model.RelationshipParameter;
+import org.jqassistant.contrib.plugin.plantumlrule.model.RelationshipLabel;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -14,9 +14,9 @@ import org.junit.runners.Parameterized.Parameters;
 import java.util.Collection;
 
 @RunWith(Parameterized.class)
-public class RelationshipParameterTest {
+public class RelationshipLabelTest {
 
-    private String label;
+    private String value;
 
     private String expectedModifier;
 
@@ -28,8 +28,8 @@ public class RelationshipParameterTest {
 
     private String expectedFilter;
 
-    public RelationshipParameterTest(String label, String expectedModifier, String expectedAlias, String expectedType, String expectedHops, String expectedFilter) {
-        this.label = label;
+    public RelationshipLabelTest(String value, String expectedModifier, String expectedAlias, String expectedType, String expectedHops, String expectedFilter) {
+        this.value = value;
         this.expectedModifier = expectedModifier;
         this.expectedAlias = expectedAlias;
         this.expectedType = expectedType;
@@ -58,15 +58,15 @@ public class RelationshipParameterTest {
 
     @Test
     public void parse() {
-        RelationshipParameter relationshipParameter = RelationshipParameter.getRelationshipParameter(label);
-        if (label == null) {
-            assertThat(relationshipParameter, nullValue());
+        RelationshipLabel relationshipLabel = RelationshipLabel.of(value);
+        if (value == null) {
+            assertThat(relationshipLabel, nullValue());
         } else {
-            assertThat(relationshipParameter.getModifier(), equalTo(expectedModifier));
-            assertThat(relationshipParameter.getAlias(), equalTo(expectedAlias));
-            assertThat(relationshipParameter.getType(), equalTo(expectedType));
-            assertThat(relationshipParameter.getHops(), equalTo(expectedHops));
-            assertThat(relationshipParameter.getFilter(), equalTo(expectedFilter));
+            assertThat(relationshipLabel.getModifier(), equalTo(expectedModifier));
+            assertThat(relationshipLabel.getAlias(), equalTo(expectedAlias));
+            assertThat(relationshipLabel.getType(), equalTo(expectedType));
+            assertThat(relationshipLabel.getHops(), equalTo(expectedHops));
+            assertThat(relationshipLabel.getFilter(), equalTo(expectedFilter));
         }
     }
 }

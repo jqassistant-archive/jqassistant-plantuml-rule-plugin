@@ -6,15 +6,16 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import net.sourceforge.plantuml.cucadiagram.*;
-import org.jqassistant.contrib.plugin.plantumlrule.model.Node;
-import org.jqassistant.contrib.plugin.plantumlrule.model.NodeParameter;
-import org.jqassistant.contrib.plugin.plantumlrule.model.Relationship;
-import org.jqassistant.contrib.plugin.plantumlrule.model.RelationshipParameter;
+import org.jqassistant.contrib.plugin.plantumlrule.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Parses {@link CucaDiagram}s consisting of entities and relations
  */
 public class CucaDiagramParser {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CucaDiagramParser.class);
 
     private Map<String, Node> nodes;
 
@@ -79,14 +80,14 @@ public class CucaDiagramParser {
     private void addNode(IEntity entity, Map<String, Node> nodes) {
         Node.NodeBuilder nodeBuilder = Node.builder().id(entity.getUid());
         for (String stereoType : entity.getStereotype().getMultipleLabels()) {
-            String label = stereoType.trim();
-            if (label.startsWith("+")) {
-                nodeBuilder.mergeLabel(label.substring(1));
+            NodeStereotype nodeStereotype = NodeStereotype.of(stereoType);
+            if (nodeStereotype != null) {
+                nodeBuilder.stereotype(nodeStereotype);
             } else {
-                nodeBuilder.matchLabel(label);
+                LOGGER.warn("Invalid stereotype '{}', ignoring it.", stereoType);
             }
         }
-        nodeBuilder.nodeParameter(getNodeParameter(entity.getDisplay()));
+        nodeBuilder.nodeLabel(getNodeLabel(entity.getDisplay()));
         Node node = nodeBuilder.build();
         nodes.put(node.getId(), node);
     }
@@ -101,62 +102,59 @@ public class CucaDiagramParser {
     private Map<String, Relationship> getRelationships(CucaDiagram diagram, Map<String, Node> nodes) {
         LinkedHashMap<String, Relationship> relationships = new LinkedHashMap<>();
         for (Link link : diagram.getLinks()) {
-            Relationship.RelationshipBuilder builder = Relationship.builder().id(link.getUid().toLowerCase());
             Display display = link.getLabel();
-            RelationshipParameter relationshipParameter = getRelationshipParameter(display);
-            builder.relationshipParameter(relationshipParameter);
-            String relationType = relationshipParameter.getType();
-            if (relationType != null) {
-                if ("+".equals(relationshipParameter.getModifier())) {
-                    builder.mergeType(relationType);
+            RelationshipLabel relationshipLabel = getRelationshipParameter(display);
+            if (relationshipLabel != null) {
+                Relationship.RelationshipBuilder builder = Relationship.builder().id(link.getUid().toLowerCase());
+                builder.relationshipLabel(relationshipLabel);
+                String relationType = relationshipLabel.getType();
+                Node entity1 = nodes.get(link.getEntity1().getUid());
+                Node entity2 = nodes.get(link.getEntity2().getUid());
+                if (link.isInverted()) {
+                    builder.from(entity2);
+                    builder.to(entity1);
                 } else {
-                    builder.matchType(relationType);
+                    builder.from(entity1);
+                    builder.to(entity2);
                 }
-            }
-            Node entity1 = nodes.get(link.getEntity1().getUid());
-            Node entity2 = nodes.get(link.getEntity2().getUid());
-            if (link.isInverted()) {
-                builder.from(entity2);
-                builder.to(entity1);
+                Relationship relationship = builder.build();
+                relationships.put(relationship.getId(), relationship);
             } else {
-                builder.from(entity1);
-                builder.to(entity2);
+                LOGGER.warn("Invalid  relationship '{}', ignoring it.", display);
             }
-            Relationship relationship = builder.build();
-            relationships.put(relationship.getId(), relationship);
         }
         return relationships;
     }
 
     /**
-     * Extract {@link NodeParameter} from the {@link Display}.
+     * Extract {@link NodeLabel} from the {@link Display}.
      *
      * @param display The {@link Display}.
-     * @return The {@link NodeParameter}.
+     * @return The {@link NodeLabel}.
      */
-    private NodeParameter getNodeParameter(Display display) {
+    private NodeLabel getNodeLabel(Display display) {
         for (CharSequence charSequence : display) {
-            NodeParameter nodeParameter = NodeParameter.getNodeParameter(charSequence);
-            if (nodeParameter != null) {
-                return nodeParameter;
+            NodeLabel nodeLabel = NodeLabel.of(charSequence);
+            if (nodeLabel != null) {
+                return nodeLabel;
             }
         }
-        return NodeParameter.DEFAULT;
+        return NodeLabel.DEFAULT;
     }
 
     /**
-     * Extract the {@link RelationshipParameter} from thi given {@link Display}.
+     * Extract the {@link RelationshipLabel} from thi given {@link Display}.
      *
      * @param display The {@link Display}.
-     * @return The {@link RelationshipParameter}.
+     * @return The {@link RelationshipLabel}.
      */
-    private RelationshipParameter getRelationshipParameter(Display display) {
+    private RelationshipLabel getRelationshipParameter(Display display) {
         for (CharSequence charSequence : display) {
-            RelationshipParameter relationshipParameter = RelationshipParameter.getRelationshipParameter(charSequence);
-            if (relationshipParameter != null) {
-                return relationshipParameter;
+            RelationshipLabel relationshipLabel = RelationshipLabel.of(charSequence);
+            if (relationshipLabel != null) {
+                return relationshipLabel;
             }
         }
-        return RelationshipParameter.DEFAULT;
+        return RelationshipLabel.DEFAULT;
     }
 }

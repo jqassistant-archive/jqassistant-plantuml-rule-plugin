@@ -14,13 +14,13 @@ import lombok.*;
 @Getter
 @Builder
 @ToString
-public class RelationshipParameter {
+public class RelationshipLabel {
 
     // EXTENDS*0..1{key1:1,key2:"test"}
-    public static final Pattern RELATIONSHIP_PATTERN = Pattern
+    public static final Pattern LABEL_PATTERN = Pattern
         .compile("(\\((?<modifier>\\+)\\))?\\s?" + "(?<alias>\\w+)?\\s?" + "(:\\s?(?<type>\\w+))?\\s?" + "(?<hops>\\*([0-9]?(..)?[0-9]?))?" + "\\s?(?<filter>\\{.*})?");
 
-    public static final RelationshipParameter DEFAULT = RelationshipParameter.builder().build();
+    public static final RelationshipLabel DEFAULT = RelationshipLabel.builder().build();
 
     /**
      * The modifier, currently only + is supported.
@@ -47,15 +47,15 @@ public class RelationshipParameter {
      */
     private String filter;
 
-    public static RelationshipParameter getRelationshipParameter(CharSequence label) {
-        if (label == null) {
+    public static RelationshipLabel of(CharSequence value) {
+        if (value == null) {
             return null;
         }
-        Matcher matcher = RELATIONSHIP_PATTERN.matcher(label);
+        Matcher matcher = LABEL_PATTERN.matcher(value);
         if (!matcher.matches()) {
             return null;
         }
-        return RelationshipParameter.builder().modifier(matcher.group("modifier")).alias(matcher.group("alias")).type(matcher.group("type")).hops(matcher.group("hops"))
+        return RelationshipLabel.builder().modifier(matcher.group("modifier")).alias(matcher.group("alias")).type(matcher.group("type")).hops(matcher.group("hops"))
             .filter(matcher.group("filter")).build();
     }
 
