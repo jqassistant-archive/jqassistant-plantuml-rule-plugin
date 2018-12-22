@@ -1,0 +1,7 @@
+= Changelog
+
+== 1.6.0
+
+- Upgraded to jQAssistant 1.6.0
+- Modifiers for adding a label or creating a relationship must now be specified as `(+)` instead of `+`, e.g. `<<(+)Layer>>`.
+

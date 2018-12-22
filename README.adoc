@@ -29,8 +29,8 @@ image::layer.png[]
 
 === Prerequisites
 
-- Java 7
-- jQAssistant 1.4+
+- Java 8
+- jQAssistant 1.6.0
 
 === Maven
 
@@ -42,7 +42,7 @@ Add the plugin as dependency to the jQAssistant Maven plugin:
 <plugin>
     <groupId>com.buschmais.jqassistant</groupId>
     <artifactId>jqassistant-maven-plugin</artifactId>
-    <version>${jqassistant.version}</version>
+    <version>1.6.0</version>
     <executions>
         <execution>
             <id>default-cli</id>
@@ -64,13 +64,13 @@ Add the plugin as dependency to the jQAssistant Maven plugin:
         <dependency>
             <groupId>org.jqassistant.contrib.plugin</groupId>
             <artifactId>jqassistant-plantuml-rule-plugin</artifactId>
-            <version>1.0.0</version>
+            <version>1.6.0</version>
         </dependency>
         <!-- Asciidoc report plugin -->
         <dependency>
             <groupId>org.jqassistant.contrib.plugin</groupId>
             <artifactId>jqassistant-asciidoc-report-plugin</artifactId>
-            <version>1.1.0</version>
+            <version>1.6.0</version>
         </dependency>
     </dependencies>
 </plugin>
