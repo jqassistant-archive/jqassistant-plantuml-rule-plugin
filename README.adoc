@@ -76,6 +76,8 @@ Add the plugin as dependency to the jQAssistant Maven plugin:
 </plugin>
 ----
 
+For using the plugin with the command line distribution download the JAR file from https://search.maven.org/search?q=a:jqassistant-plantuml-rule-plugin[Maven Central] and copy it to the `plugins/` folder.
+
 == Diagrams As Rules
 
 === Introduction
