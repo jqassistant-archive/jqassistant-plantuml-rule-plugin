@@ -1,34 +1,17 @@
 package org.jqassistant.contrib.plugin.plantumlrule;
 
 import org.jqassistant.contrib.plugin.plantumlrule.model.NodeStereotype;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Collection;
 
 import static java.util.Arrays.asList;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(Parameterized.class)
+
 public class NodeStereotypeTest {
 
-    private String value;
-
-    private String expectedModifier;
-
-    private String expectedLabel;
-
-    public NodeStereotypeTest(String value, String expectedModifier, String expectedLabel) {
-        this.value = value;
-        this.expectedModifier = expectedModifier;
-        this.expectedLabel = expectedLabel;
-    }
-
-    @Parameters
     public static Collection<Object[]> data() {
         return asList(new Object[][]{
             {null, null, null},
@@ -38,14 +21,15 @@ public class NodeStereotypeTest {
         });
     }
 
-    @Test
-    public void parse() {
+    @ParameterizedTest
+    @MethodSource("data")
+    public void parse(String value, String expectedModifier, String expectedLabel) {
         NodeStereotype nodeStereotype = NodeStereotype.of(value);
         if (value == null) {
-            assertThat(nodeStereotype, nullValue());
+            assertThat(nodeStereotype).isNull();
         } else {
-            assertThat(nodeStereotype.getModifier(), equalTo(expectedModifier));
-            assertThat(nodeStereotype.getLabel(), equalTo(expectedLabel));
+            assertThat(nodeStereotype.getModifier()).isEqualTo(expectedModifier);
+            assertThat(nodeStereotype.getLabel()).isEqualTo(expectedLabel);
         }
     }
 }
