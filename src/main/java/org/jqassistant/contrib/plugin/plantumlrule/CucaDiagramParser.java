@@ -79,17 +79,22 @@ public class CucaDiagramParser {
      */
     private void addNode(IEntity entity, Map<String, Node> nodes) {
         Node.NodeBuilder nodeBuilder = Node.builder().id(entity.getUid());
-        for (String stereoType : entity.getStereotype().getMultipleLabels()) {
-            NodeStereotype nodeStereotype = NodeStereotype.of(stereoType);
-            if (nodeStereotype != null) {
-                nodeBuilder.stereotype(nodeStereotype);
-            } else {
-                LOGGER.warn("Invalid stereotype '{}', ignoring it.", stereoType);
+        Stereotype stereoType = entity.getStereotype();
+        if (stereoType != null) {
+            for (String stereoTypeLabel : stereoType.getMultipleLabels()) {
+                NodeStereotype nodeStereotype = NodeStereotype.of(stereoTypeLabel);
+                if (nodeStereotype != null) {
+                    nodeBuilder.stereotype(nodeStereotype);
+                } else {
+                    LOGGER.warn("Invalid stereotype '{}', ignoring it.", stereoTypeLabel);
+                }
             }
+            nodeBuilder.nodeLabel(getNodeLabel(entity.getDisplay()));
+            Node node = nodeBuilder.build();
+            nodes.put(node.getId(), node);
+        } else {
+          LOGGER.info("Ignoring node '{}' because missing stereotype.", entity);
         }
-        nodeBuilder.nodeLabel(getNodeLabel(entity.getDisplay()));
-        Node node = nodeBuilder.build();
-        nodes.put(node.getId(), node);
     }
 
     /**
@@ -107,20 +112,23 @@ public class CucaDiagramParser {
             if (relationshipLabel != null) {
                 Relationship.RelationshipBuilder builder = Relationship.builder().id(link.getUid().toLowerCase());
                 builder.relationshipLabel(relationshipLabel);
-                String relationType = relationshipLabel.getType();
                 Node entity1 = nodes.get(link.getEntity1().getUid());
                 Node entity2 = nodes.get(link.getEntity2().getUid());
-                if (link.isInverted()) {
+                if (entity1 != null && entity2 != null) {
+                  if (link.isInverted()) {
                     builder.from(entity2);
                     builder.to(entity1);
+                  } else {
+                      builder.from(entity1);
+                      builder.to(entity2);
+                  }
+                  Relationship relationship = builder.build();
+                  relationships.put(relationship.getId(), relationship);
                 } else {
-                    builder.from(entity1);
-                    builder.to(entity2);
+                  LOGGER.info("Ignoring relationship '{}' because of node without stereotype.", display);
                 }
-                Relationship relationship = builder.build();
-                relationships.put(relationship.getId(), relationship);
             } else {
-                LOGGER.warn("Invalid  relationship '{}', ignoring it.", display);
+                LOGGER.warn("Invalid  relationship '{}', ignoring it.", link);
             }
         }
         return relationships;
@@ -149,6 +157,9 @@ public class CucaDiagramParser {
      * @return The {@link RelationshipLabel}.
      */
     private RelationshipLabel getRelationshipParameter(Display display) {
+        if (Display.isNull(display)) {
+            return null;
+        }
         for (CharSequence charSequence : display) {
             RelationshipLabel relationshipLabel = RelationshipLabel.of(charSequence);
             if (relationshipLabel != null) {

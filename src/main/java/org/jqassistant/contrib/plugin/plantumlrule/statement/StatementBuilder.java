@@ -130,7 +130,7 @@ public class StatementBuilder {
 
     private void addRelationshipNode(Node node, Segment segment) {
         segment.append('(');
-        String toAlias = node.getNodeLabel().getAlias();
+        String toAlias = node.getNodeLabel() != null ? node.getNodeLabel().getAlias() : null;
         if (toAlias != null) {
             segment.append(toAlias);
         } else {

@@ -291,6 +291,8 @@ skinparam componentStyle uml2
 
 package "{name:'root'}" as root <<Package>> <<(+) Root>> {
   package "layer" as layer <<Package>> <<(+) Layer>>
+  package "ignore me" as ignored
+  layer - ignored : RELATION-IGNORED
 }
 
 root -> layer : :CONTAINS
