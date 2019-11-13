@@ -125,7 +125,7 @@ public class CucaDiagramParser {
                   Relationship relationship = builder.build();
                   relationships.put(relationship.getId(), relationship);
                 } else {
-                  LOGGER.info("Ignoring relationship '{}' because of node without stereotype.", display);
+                  LOGGER.debug("Ignoring relationship '{}' because of node without stereotype.", display);
                 }
             } else {
                 LOGGER.warn("Invalid  relationship '{}', ignoring it.", link);
