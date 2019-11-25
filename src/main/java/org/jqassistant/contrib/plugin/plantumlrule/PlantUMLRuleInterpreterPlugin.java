@@ -1,6 +1,23 @@
 package org.jqassistant.contrib.plugin.plantumlrule;
 
-import static java.util.Collections.singletonList;
+import com.buschmais.jqassistant.core.analysis.api.AnalyzerContext;
+import com.buschmais.jqassistant.core.analysis.api.Result;
+import com.buschmais.jqassistant.core.analysis.api.RuleInterpreterPlugin;
+import com.buschmais.jqassistant.core.analysis.impl.AbstractCypherRuleInterpreterPlugin;
+import com.buschmais.jqassistant.core.rule.api.model.ExecutableRule;
+import com.buschmais.jqassistant.core.rule.api.model.RuleException;
+import com.buschmais.jqassistant.core.rule.api.model.Severity;
+import com.buschmais.jqassistant.core.rule.api.reader.AggregationVerification;
+import com.buschmais.jqassistant.core.rule.api.reader.RowCountVerification;
+import com.buschmais.jqassistant.core.shared.asciidoc.AsciidoctorFactory;
+import net.sourceforge.plantuml.BlockUml;
+import net.sourceforge.plantuml.SourceStringReader;
+import net.sourceforge.plantuml.core.Diagram;
+import net.sourceforge.plantuml.cucadiagram.CucaDiagram;
+import net.sourceforge.plantuml.png.MetadataTag;
+import org.asciidoctor.ast.AbstractBlock;
+import org.jqassistant.contrib.plugin.plantumlrule.statement.Statement;
+import org.jqassistant.contrib.plugin.plantumlrule.statement.StatementBuilder;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,25 +27,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.buschmais.jqassistant.core.analysis.api.AnalyzerContext;
-import com.buschmais.jqassistant.core.analysis.api.Result;
-import com.buschmais.jqassistant.core.analysis.api.RuleInterpreterPlugin;
-import com.buschmais.jqassistant.core.analysis.api.rule.ExecutableRule;
-import com.buschmais.jqassistant.core.analysis.api.rule.RuleException;
-import com.buschmais.jqassistant.core.analysis.api.rule.Severity;
-import com.buschmais.jqassistant.core.analysis.impl.AbstractCypherRuleInterpreterPlugin;
-import com.buschmais.jqassistant.core.rule.api.reader.AggregationVerification;
-import com.buschmais.jqassistant.core.rule.api.reader.RowCountVerification;
-import com.buschmais.jqassistant.core.shared.asciidoc.AsciidoctorFactory;
-
-import net.sourceforge.plantuml.BlockUml;
-import net.sourceforge.plantuml.SourceStringReader;
-import net.sourceforge.plantuml.core.Diagram;
-import net.sourceforge.plantuml.cucadiagram.CucaDiagram;
-import net.sourceforge.plantuml.png.MetadataTag;
-import org.asciidoctor.ast.AbstractBlock;
-import org.jqassistant.contrib.plugin.plantumlrule.statement.Statement;
-import org.jqassistant.contrib.plugin.plantumlrule.statement.StatementBuilder;
+import static java.util.Collections.singletonList;
 
 /**
  * A {@link RuleInterpreterPlugin} that parses PlantUML diagrams and translates

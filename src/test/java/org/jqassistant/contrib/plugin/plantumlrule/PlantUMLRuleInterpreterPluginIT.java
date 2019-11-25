@@ -1,8 +1,8 @@
 package org.jqassistant.contrib.plugin.plantumlrule;
 
 import com.buschmais.jqassistant.core.analysis.api.Result;
-import com.buschmais.jqassistant.core.analysis.api.rule.Concept;
-import com.buschmais.jqassistant.core.analysis.api.rule.RuleException;
+import com.buschmais.jqassistant.core.rule.api.model.Concept;
+import com.buschmais.jqassistant.core.rule.api.model.RuleException;
 import com.buschmais.jqassistant.core.rule.api.reader.RuleConfiguration;
 import com.buschmais.jqassistant.core.rule.api.source.FileRuleSource;
 import com.buschmais.jqassistant.core.rule.impl.reader.AsciidocRuleParserPlugin;
@@ -15,12 +15,10 @@ import org.jqassistant.contrib.plugin.plantumlrule.set.root.Root;
 import org.jqassistant.contrib.plugin.plantumlrule.set.root.a.A;
 import org.jqassistant.contrib.plugin.plantumlrule.set.root.b.B;
 import org.jqassistant.contrib.plugin.plantumlrule.set.root.c.C;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
