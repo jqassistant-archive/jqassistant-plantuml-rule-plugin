@@ -16,7 +16,7 @@ import lombok.*;
 @ToString
 public class NodeLabel {
 
-    public static final Pattern NODE_LABEL_PATTERN = Pattern.compile("(?<alias>\\w+)?\\s?(?<filter>\\{.*})?");
+    public static final Pattern NODE_LABEL_PATTERN = Pattern.compile("(?<alias>\\w+)?\\s*(?<filter>\\{.*})?");
 
     public static final NodeLabel DEFAULT = NodeLabel.builder().build();
 

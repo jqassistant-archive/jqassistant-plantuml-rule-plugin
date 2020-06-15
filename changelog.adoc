@@ -1,5 +1,8 @@
 = Changelog
 
+== 1.9.0
+- Allow multiple white spaces between node alias and filter
+
 == 1.6.0
 
 - Upgraded to jQAssistant 1.6.0

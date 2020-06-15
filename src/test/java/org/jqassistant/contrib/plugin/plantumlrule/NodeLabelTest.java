@@ -18,7 +18,7 @@ public class NodeLabelTest {
             {"t", "t", null},
             {"t{x:1}", "t", "{x:1}"},
             {"t{x:1,y:\"foo\"}", "t", "{x:1,y:\"foo\"}"},
-            {"t { x:1, y:\"foo\" }", "t", "{ x:1, y:\"foo\" }"}
+            {"t  { x:1, y:\"foo\" }", "t", "{ x:1, y:\"foo\" }"}
         });
     }
 
