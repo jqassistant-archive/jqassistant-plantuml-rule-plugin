@@ -339,3 +339,14 @@ entity -up-|> abstractEntity  : :EXTENDS*
 - Filter for `entity` nodes having a relationship of type `EXTENDS*` (i.e. allowing multiple hops) to the abstract entity
 - Add a label `Entity` to all entities and return them
 
+== Changelog
+
+=== 1.9.0
+- Upgraded to jQAssistant 1.9.0
+- Allow multiple white spaces between node alias and filter
+
+=== 1.6.0
+
+- Upgraded to jQAssistant 1.6.0
+- Modifiers for adding a label or creating a relationship must now be specified as `(+)` instead of `+`, e.g. `<<(+)Layer>>`.
+
