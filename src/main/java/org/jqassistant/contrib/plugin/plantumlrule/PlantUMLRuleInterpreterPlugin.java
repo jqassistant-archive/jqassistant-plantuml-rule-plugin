@@ -15,7 +15,7 @@ import net.sourceforge.plantuml.SourceStringReader;
 import net.sourceforge.plantuml.core.Diagram;
 import net.sourceforge.plantuml.cucadiagram.CucaDiagram;
 import net.sourceforge.plantuml.png.MetadataTag;
-import org.asciidoctor.ast.AbstractBlock;
+import org.asciidoctor.ast.StructuralNode;
 import org.jqassistant.contrib.plugin.plantumlrule.statement.Statement;
 import org.jqassistant.contrib.plugin.plantumlrule.statement.StatementBuilder;
 
@@ -44,7 +44,7 @@ public class PlantUMLRuleInterpreterPlugin extends AbstractCypherRuleInterpreter
 
     @Override
     public <T extends ExecutableRule<?>> boolean accepts(T executableRule) {
-        return AbstractBlock.class.isAssignableFrom(executableRule.getExecutable().getSource().getClass());
+        return StructuralNode.class.isAssignableFrom(executableRule.getExecutable().getSource().getClass());
     }
 
     @Override
@@ -121,7 +121,7 @@ public class PlantUMLRuleInterpreterPlugin extends AbstractCypherRuleInterpreter
      *             If extraction fails.
      */
     private <T extends ExecutableRule<?>> String getDiagramSource(T executableRule) throws RuleException {
-        AbstractBlock abstractBlock = (AbstractBlock) executableRule.getExecutable().getSource();
+        StructuralNode abstractBlock = (StructuralNode) executableRule.getExecutable().getSource();
         // Asciidoctor delivers the rendered image which contains the diagram source
         // code as metadata.
         File imagesDirectory = getImagesDirectory(abstractBlock);
@@ -145,7 +145,7 @@ public class PlantUMLRuleInterpreterPlugin extends AbstractCypherRuleInterpreter
         return matcher.group(1);
     }
 
-    private File getImagesDirectory(AbstractBlock abstractBlock) {
+    private File getImagesDirectory(StructuralNode abstractBlock) {
         String imagesDirectory = (String) abstractBlock.getDocument().getAttributes().get(AsciidoctorFactory.ATTRIBUTE_IMAGES_OUT_DIR);
         return new File(imagesDirectory);
     }
