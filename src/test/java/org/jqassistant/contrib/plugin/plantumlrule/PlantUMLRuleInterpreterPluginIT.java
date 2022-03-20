@@ -1,15 +1,21 @@
 package org.jqassistant.contrib.plugin.plantumlrule;
 
+import java.io.File;
+import java.util.List;
+import java.util.Map;
+
+import com.buschmais.jqassistant.core.configuration.api.Configuration;
+import com.buschmais.jqassistant.core.configuration.impl.ConfigurationLoaderImpl;
 import com.buschmais.jqassistant.core.report.api.model.Result;
 import com.buschmais.jqassistant.core.rule.api.model.Concept;
 import com.buschmais.jqassistant.core.rule.api.model.RuleException;
-import com.buschmais.jqassistant.core.rule.api.reader.RuleConfiguration;
 import com.buschmais.jqassistant.core.rule.api.source.FileRuleSource;
 import com.buschmais.jqassistant.core.rule.impl.reader.AsciidocRuleParserPlugin;
 import com.buschmais.jqassistant.core.rule.impl.reader.RuleParser;
 import com.buschmais.jqassistant.plugin.java.api.model.PackageDescriptor;
 import com.buschmais.jqassistant.plugin.java.test.AbstractJavaPluginIT;
 import com.buschmais.xo.api.CompositeObject;
+
 import org.hamcrest.MatcherAssert;
 import org.jqassistant.contrib.plugin.plantumlrule.set.root.Root;
 import org.jqassistant.contrib.plugin.plantumlrule.set.root.a.A;
@@ -17,10 +23,6 @@ import org.jqassistant.contrib.plugin.plantumlrule.set.root.b.B;
 import org.jqassistant.contrib.plugin.plantumlrule.set.root.c.C;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.io.File;
-import java.util.List;
-import java.util.Map;
 
 import static com.buschmais.jqassistant.core.report.api.model.Result.Status.SUCCESS;
 import static com.buschmais.jqassistant.plugin.java.test.matcher.PackageDescriptorMatcher.packageDescriptor;
@@ -38,11 +40,14 @@ public class PlantUMLRuleInterpreterPluginIT extends AbstractJavaPluginIT {
 
     @BeforeEach
     public void initRules() throws RuleException {
+        ConfigurationLoaderImpl configurationLoader = new ConfigurationLoaderImpl();
+        Configuration configuration = configurationLoader.load(Configuration.class);
         AsciidocRuleParserPlugin asciidocRuleParserPlugin = new AsciidocRuleParserPlugin();
         asciidocRuleParserPlugin.initialize();
-        asciidocRuleParserPlugin.configure(RuleConfiguration.DEFAULT);
+        asciidocRuleParserPlugin.configure(configuration.analyze()
+            .rule());
         RuleParser ruleParser = new RuleParser(singletonList(asciidocRuleParserPlugin));
-        ruleSet = ruleParser.parse(singletonList(new FileRuleSource(new File("README.adoc"))));
+        ruleSet = ruleParser.parse(singletonList(new FileRuleSource(new File("."),"README.adoc")));
     }
 
     @Test
