@@ -1,6 +1,9 @@
-:toc:
 :basedir: .
+:toc:
+
 = jQAssistant PlantUML Rule Plugin
+
+NOTE:: This project has been archived and is no longer actively developed. Please refer to the existing releases and documentation.
 
 This project provides a http://jqassistant.org/[jQAssistant] plugin for embedding http://plantuml.com/[PlantUML] diagrams into Asciidoc documents that are interpreted as rules, i.e. concepts or constraints.
 
